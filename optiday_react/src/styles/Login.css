@@ -1,0 +1,32 @@
+.background {
+    background-color: #292929;
+}
+.login-container {
+    background-color: #858585;
+    border-radius: 30px;
+    padding: 2rem;
+    width: 25rem;
+}
+.form-control:focus {
+    box-shadow: none;
+    border: 1px solid #6c757d;
+}
+.icon-button {
+    width: 40px;
+    height: 40px;
+    background-color: #fff;
+    border-radius: 10%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.login-button {
+    background-color: #6c757d;
+    color: #fff;
+}
+.login-button:hover {
+    background-color: #5a6268;
+}
+a {
+    text-decoration: none;
+}
