@@ -1,15 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import '../styles/Mypage.css';
 
-// Constants
-const INITIAL_STATE = {
-    userData: {
+function Mypage() {
+    const defaultProfileImg = '/images/user_default.png'; // Replace with actual default image URL
+    const [userData, setUserData] = useState({
         current: {
             name: "김코드",
             tag: "1234",
             say: "오늘도 화이팅!",
             birthDate: "1990-01-01",
             phone: "010-1234-5678",
-            email: "example@email.com"
+            email: "example@email.com",
+            followers: 13,
+            following: 10,
+            profileImg: defaultProfileImg,
         },
         temp: {
             name: "김코드",
@@ -17,214 +21,210 @@ const INITIAL_STATE = {
             say: "오늘도 화이팅!",
             birthDate: "1990-01-01",
             phone: "010-1234-5678",
-            email: "example@email.com"
+            email: "example@email.com",
+            followers: 13,
+            following: 10,
+            profileImg: '',
         }
-    },
-    editModes: {
+    });
+
+    const [editModes, setEditModes] = useState({
         global: false,
         name: false,
         say: false,
         birthDate: false,
         phone: false,
         email: false
-    },
-    errors: {
+    });
+
+    const [errors, setErrors] = useState({
         name: false,
         tag: false
-    }
-};
-
-// Utility functions
-const formatPhoneNumber = (value) => {
-    const numbers = value.replace(/\D/g, '');
-    
-    if (numbers.length <= 3) {
-        return numbers;
-    } else if (numbers.length <= 7) {
-        return numbers.slice(0, 3) + '-' + numbers.slice(3);
-    } else {
-        return numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7, 11);
-    }
-};
-
-const generateYears = () => Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
-const generateMonths = () => Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
-
-// Input Field Component
-const EditableField = ({ label, value, onChange, onSave, onCancel, isEditing, error, placeholder, type = "text", style = {}, children }) => (
-    <div className="mb-3 d-flex justify-content-between align-items-center">
-        <div className="d-flex align-items-center" style={{width: '200px'}}>
-            <span className="me-2">{label}</span>
-            {error && <span className="text-danger">!</span>}
-        </div>
-        <div>
-            {isEditing ? (
-                <div className="d-flex align-items-center">
-                    {children || (
-                        <input 
-                            type={type} 
-                            value={value}
-                            onChange={onChange}
-                            placeholder={placeholder}
-                            className="me-2"
-                            style={style}
-                        />
-                    )}
-                    <button onClick={onSave} className="btn btn-sm btn-success me-2">확인</button>
-                    <button onClick={onCancel} className="btn btn-sm btn-secondary">취소</button>
-                </div>
-            ) : (
-                <span>{value || placeholder}</span>
-            )}
-        </div>
-    </div>
-);
-
-// DateSelector Component
-const DateSelector = ({ value, onChange }) => {
-    const [year, month, day] = (value || '').split('-');
-    
-    return (
-        <div className="d-flex me-2" style={{width: '250px'}}>
-            <select 
-                className="form-select me-1"
-                value={year || ''}
-                onChange={(e) => onChange('year', e.target.value)}
-                style={{width: '100px'}}
-            >
-                <option value="">년도</option>
-                {generateYears().map(year => (
-                    <option key={year} value={year}>{year}</option>
-                ))}
-            </select>
-            <select 
-                className="form-select me-1"
-                value={month || ''}
-                onChange={(e) => onChange('month', e.target.value)}
-                style={{width: '70px'}}
-            >
-                <option value="">월</option>
-                {generateMonths().map(month => (
-                    <option key={month} value={month}>{parseInt(month)}월</option>
-                ))}
-            </select>
-            <select 
-                className="form-select"
-                value={day || ''}
-                onChange={(e) => onChange('day', e.target.value)}
-                style={{width: '70px'}}
-            >
-                <option value="">일</option>
-                {Array.from(
-                    { length: getDaysInMonth(year, month) || 31 },
-                    (_, i) => String(i + 1).padStart(2, '0')
-                ).map(day => (
-                    <option key={day} value={day}>{parseInt(day)}일</option>
-                ))}
-            </select>
-        </div>
-    );
-};
-
-function Mypage() {
-    const [state, setState] = useState(INITIAL_STATE);
-
-    useEffect(() => {
-        // Reset temp data when edit mode changes
-        if (!state.editModes.global) {
-            setState(prev => ({
-                ...prev,
-                userData: {
-                    ...prev.userData,
-                    temp: { ...prev.userData.current }
-                }
-            }));
-        }
-    }, [state.editModes.global]);
+    });
 
     const updateTempField = (field, value) => {
-        setState(prev => ({
+        setUserData(prev => ({
             ...prev,
-            userData: {
-                ...prev.userData,
-                temp: { ...prev.userData.temp, [field]: value }
-            }
+            temp: { ...prev.temp, [field]: value }
         }));
     };
 
     const toggleEditMode = (field) => {
-        setState(prev => ({
+        if (!editModes[field]) {
+            // 수정 모드 시작 시 현재 값을 임시 값으로 복사
+            setUserData(prev => ({
+                ...prev,
+                temp: { ...prev.current }
+            }));
+        }
+        setEditModes(prev => ({
             ...prev,
-            editModes: {
-                ...prev.editModes,
-                [field]: !prev.editModes[field]
-            },
-            userData: {
-                ...prev.userData,
-                temp: { ...prev.userData.current }
-            }
+            [field]: !prev[field]
         }));
     };
 
-    const setError = (field, value) => {
-        setState(prev => ({
+    const handleGlobalSave = () => {
+        // 변경된 데이터를 current에 반영
+        setUserData(prev => ({
             ...prev,
-            errors: { ...prev.errors, [field]: value }
+            current: { ...prev.temp }
         }));
+        // 모든 수정 모드를 false로 설정
+        setEditModes(prev => 
+            Object.keys(prev).reduce((acc, key) => ({
+                ...acc,
+                [key]: false
+            }), {})
+        );
+        // 에러 상태 초기화
+        setErrors({
+            name: false,
+            tag: false
+        });
+    };
+
+    const handleGlobalCancel = () => {
+        // temp를 current로 되돌리기
+        setUserData(prev => ({
+            ...prev,
+            temp: { ...prev.current }
+        }));
+        // 수정 모드 종료
+        setEditModes(prev => ({
+            ...prev,
+            global: false
+        }));
+        // 에러 상태 초기화
+        setErrors({
+            name: false,
+            tag: false
+        });
     };
 
     const validateField = (field, value) => {
         switch (field) {
             case 'name':
-                return value.length >= 2;
+                if (value.length < 2) {
+                    setErrors(prev => ({ ...prev, name: true }));
+                    return false;
+                }
+                break;
             case 'tag':
-                return value.length === 4;
-            default:
-                return true;
+                if (value.length !== 4) {
+                    setErrors(prev => ({ ...prev, tag: true }));
+                    return false;
+                }
+                break;
         }
+        return true;
     };
 
-    const handleSave = (field) => {
-        const value = state.userData.temp[field];
+    const handleFieldSave = (field) => {
+        const value = userData.temp[field];
         if (validateField(field, value)) {
-            setState(prev => ({
+            setUserData(prev => ({
                 ...prev,
-                userData: {
-                    ...prev.userData,
-                    current: { ...prev.userData.current, [field]: value }
-                },
-                editModes: { ...prev.editModes, [field]: false },
-                errors: { ...prev.errors, [field]: false }
+                current: { ...prev.current, [field]: value }
             }));
-        } else {
-            setError(field, true);
+            setEditModes(prev => ({
+                ...prev,
+                [field]: false
+            }));
+            setErrors(prev => ({
+                ...prev,
+                [field]: false
+            }));
         }
     };
 
-    const handleDatePartChange = (part, value) => {
-        const [year, month, day] = (state.userData.temp.birthDate || '').split('-');
-        const newDate = {
-            year: part === 'year' ? value : year || '',
-            month: part === 'month' ? value : month || '',
-            day: part === 'day' ? value : day || ''
-        };
+    const formatPhoneNumber = (value) => {
+        const numbers = value.replace(/\D/g, '');
         
-        if (newDate.year || newDate.month || newDate.day) {
-            updateTempField('birthDate', `${newDate.year}-${newDate.month}-${newDate.day}`);
+        if (numbers.length <= 3) {
+            return numbers;
+        } else if (numbers.length <= 7) {
+            return numbers.slice(0, 3) + '-' + numbers.slice(3);
+        } else {
+            return numbers.slice(0, 3) + '-' + numbers.slice(3, 7) + '-' + numbers.slice(7, 11);
         }
+    };
+
+    const generateYears = () => Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
+    const generateMonths = () => Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
+    const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
+
+    const handleProfileImgClick = () => {
+        if (editModes.global) { // Only allow image change in edit mode
+            document.getElementById('imageUpload').click();
+        }
+    };
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = () => {
+            updateTempField('profileImg', reader.result);
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const setToDefaultImage = () => {
+        setUserData(prev => ({
+            ...prev,
+            temp: { ...prev.temp, profileImg: defaultProfileImg }
+        }));
+    };
+
+    const DateSelector = ({ value, onChange }) => {
+        const [year, month, day] = (value || '').split('-');
+        
+        return (
+            <div className="date-selector">
+                <select 
+                    className="form-select year-select"
+                    value={year || ''}
+                    onChange={(e) => onChange('year', e.target.value)}
+                >
+                    <option value="">년도</option>
+                    {generateYears().map(year => (
+                        <option key={year} value={year}>{year}</option>
+                    ))}
+                </select>
+                <select 
+                    className="form-select month-select"
+                    value={month || ''}
+                    onChange={(e) => onChange('month', e.target.value)}
+                >
+                    <option value="">월</option>
+                    {generateMonths().map(month => (
+                        <option key={month} value={month}>{parseInt(month)}월</option>
+                    ))}
+                </select>
+                <select 
+                    className="form-select day-select"
+                    value={day || ''}
+                    onChange={(e) => onChange('day', e.target.value)}
+                >
+                    <option value="">일</option>
+                    {Array.from(
+                        { length: getDaysInMonth(year, month) || 31 },
+                        (_, i) => String(i + 1).padStart(2, '0')
+                    ).map(day => (
+                        <option key={day} value={day}>{parseInt(day)}일</option>
+                    ))}
+                </select>
+            </div>
+        );
     };
 
     return (
-        <div className="bg-light font-sans contents">
+        <div className="contents">
             <div className="container-fluid px-4">
-                {/* Main Content */}
                 <div className="row justify-content-center">
                     <div className="col-10">
                         <div className="bg-white p-4">
-                            {/* Global Edit Buttons */}
                             <div className="d-flex justify-content-end mb-3">
-                                {!state.editModes.global ? (
+                                {!editModes.global ? (
                                     <button 
                                         className="btn btn-primary" 
                                         onClick={() => toggleEditMode('global')}
@@ -232,173 +232,172 @@ function Mypage() {
                                         수정
                                     </button>
                                 ) : (
+                                    <div>
                                         <button 
                                             className="btn btn-success me-2"
-                                            onClick={() => setState(prev => ({
-                                                ...prev,
-                                                editModes: { ...prev.editModes, global: false }
-                                            }))}
+                                            onClick={handleGlobalSave}
                                         >
                                             수정완료
                                         </button>
+                                        <button 
+                                            className="btn btn-secondary"
+                                            onClick={handleGlobalCancel}
+                                        >
+                                            취소
+                                        </button>
+                                    </div>
                                 )}
                             </div>
 
-                            <div className="row mb-4">
-                                <div className="col-4">
-                                    <div className="profile_img">
-                                    </div>
-                                </div>
-                                <div className="col">
-                                    <h3 className="mb-3">
-                                        {state.editModes.name ? (
-                                            <div className="col">
-                                                <div className="mb-2">
-                                                    <input 
-                                                        type="text" 
-                                                        value={state.userData.temp.name}
-                                                        onChange={(e) => updateTempField('name', e.target.value)}
-                                                        placeholder="이름"
-                                                        style={{width: '100px'}}
-                                                        minLength={2}
-                                                        maxLength={5}
-                                                    />#
-                                                    <input 
-                                                        type="text" 
-                                                        value={state.userData.temp.tag}
-                                                        onChange={(e) => updateTempField('tag', e.target.value)}
-                                                        placeholder="태그"
-                                                        style={{width: '80px'}}
-                                                        maxLength={4}
+                            <div className="profile-section">
+                                <div className="row">
+                                    <div className="col-4">
+                                        <div className="profile-image-container">
+                                            <div className="profile-image-wrapper">
+                                                {userData.temp.profileImg || userData.current.profileImg ? (
+                                                    <img 
+                                                        src={userData.temp.profileImg || userData.current.profileImg} 
+                                                        alt="Profile" 
+                                                        onClick={handleProfileImgClick} 
+                                                        className="profile_img"
                                                     />
-                                                    <button onClick={() => {
-                                                        setState(prev => ({
-                                                            ...prev,
-                                                            userData: {
-                                                                ...prev.userData,
-                                                                current: {
-                                                                    ...prev.userData.current,
-                                                                    name: prev.userData.temp.name,
-                                                                    tag: prev.userData.temp.tag
-                                                                }
-                                                            },
-                                                            editModes: {
-                                                                ...prev.editModes,
-                                                                name: false
-                                                            },
-                                                            errors: {
-                                                                name: false,
-                                                                tag: false
-                                                            }
-                                                        }));
-                                                    }} className="btn btn-sm btn-success me-2">확인</button>
-                                                    <button onClick={() => {
-                                                        toggleEditMode('name');
-                                                        setState(prev => ({
-                                                            ...prev,
-                                                            errors: {
-                                                                name: false,
-                                                                tag: false
-                                                            }
-                                                        }));
-                                                    }} className="btn btn-sm btn-secondary">취소</button>
-                                                    {state.errors.name && <span className="text-danger ms-2 fs-5">이름을 두글자 이상으로 작성해주세요.</span>}
-                                                    {state.errors.tag && <span className="text-danger ms-2 fs-5">4글자 태그를 입력해주세요.</span>}
+                                                ) : (
+                                                    <img 
+                                                        src={defaultProfileImg} 
+                                                        alt="Default Profile" 
+                                                        onClick={handleProfileImgClick} 
+                                                        className="profile_img"
+                                                        style={{ cursor: 'pointer' }}
+                                                    />
+                                                )}
+                                            </div>
+                                            <input 
+                                                type="file" 
+                                                id="imageUpload" 
+                                                style={{ display: 'none' }} 
+                                                accept="image/*" 
+                                                onChange={handleImageChange} 
+                                            />
+                                            {editModes.global && (
+                                                <button 
+                                                    onClick={setToDefaultImage} 
+                                                    className="btn btn-secondary mt-3 profile-default-button"
+                                                >기본 이미지로 변경</button>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <h3 className="mb-3">
+                                            {editModes.name ? (
+                                                <div className="col">
+                                                    <div className="button-group mb-2">
+                                                        <input 
+                                                            type="text" 
+                                                            value={userData.temp.name}
+                                                            onChange={(e) => updateTempField('name', e.target.value)}
+                                                            placeholder="이름"
+                                                            className="field-input name"
+                                                            minLength={2}
+                                                            maxLength={5}
+                                                        />#
+                                                        <input 
+                                                            type="text" 
+                                                            value={userData.temp.tag}
+                                                            onChange={(e) => updateTempField('tag', e.target.value)}
+                                                            placeholder="태그"
+                                                            className="field-input tag"
+                                                            maxLength={4}
+                                                        />
+                                                        <button onClick={() => handleFieldSave('name')} className="btn btn-sm btn-success">확인</button>
+                                                        <button onClick={() => toggleEditMode('name')} className="btn btn-sm btn-secondary">취소</button>
+                                                        {errors.name && <span className="text-danger ms-2 fs-5">이름을 두글자 이상으로 작성해주세요.</span>}
+                                                        {errors.tag && <span className="text-danger ms-2 fs-5">4글자 태그를 입력해주세요.</span>}
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="d-flex align-items-center">
+                                                    <div>{userData.current.name}#{userData.current.tag}</div>
+                                                    {editModes.global && (
+                                                        <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('name')}>수정</button>
+                                                    )}
+                                                </div>
+                                            )}
+                                        </h3>
+
+                                        <p className="text-muted">
+                                            {editModes.say ? (
+                                                <div className="button-group">
+                                                    <input 
+                                                        type="text" 
+                                                        value={userData.temp.say}
+                                                        onChange={(e) => updateTempField('say', e.target.value)}
+                                                        placeholder="상태메시지"
+                                                        className="field-input say"
+                                                    />
+                                                    <button onClick={() => handleFieldSave('say')} className="btn btn-sm btn-success">확인</button>
+                                                    <button onClick={() => toggleEditMode('say')} className="btn btn-sm btn-secondary">취소</button>
+                                                </div>
+                                            ) : (
+                                                <>
+                                                    {userData.current.say}
+                                                    {editModes.global && (
+                                                        <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('say')}>수정</button>
+                                                    )}
+                                                </>
+                                            )}
+                                        </p>
+
+                                        <p className="mt-2 text-muted">
+                                            팔로워 {userData.current.followers} 팔로잉 {userData.current.following}
+                                        </p>
+                                        <div className="profile-info">
+                                            <div className="info-row">
+                                                <div className="info-value">
+                                                    {editModes.global && (
+                                                        <button 
+                                                            onClick={() => {/* 비밀번호 변경 로직 */}} 
+                                                            className="btn btn-sm btn-outline-danger"
+                                                        >
+                                                            비밀번호 변경
+                                                        </button>
+                                                    )}
                                                 </div>
                                             </div>
-                                        ) : (
-                                            <div className="d-flex align-items-center">
-                                                <div>{state.userData.current.name}#{state.userData.current.tag}</div>
-                                                {state.editModes.global && (
-                                                    <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('name')}>수정</button>
-                                                )}
-                                            </div>
-                                        )}
-                                    </h3>
-
-                                    <p className="text-muted">
-                                        {state.editModes.say ? (
-                                            <div className="d-flex align-items-center">
-                                                <input 
-                                                    type="text" 
-                                                    value={state.userData.temp.say}
-                                                    onChange={(e) => updateTempField('say', e.target.value)}
-                                                    placeholder="상태메시지"
-                                                    style={{width: '300px'}}
-                                                    className="me-2"
-                                                />
-                                                <button onClick={() => {
-                                                    setState(prev => ({
-                                                        ...prev,
-                                                        userData: {
-                                                            ...prev.userData,
-                                                            current: {
-                                                                ...prev.userData.current,
-                                                                say: prev.userData.temp.say
-                                                            }
-                                                        },
-                                                        editModes: {
-                                                            ...prev.editModes,
-                                                            say: false
-                                                        }
-                                                    }));
-                                                }} className="btn btn-sm btn-success me-2">확인</button>
-                                                <button onClick={() => toggleEditMode('say')} className="btn btn-sm btn-secondary">취소</button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                {state.userData.current.say}
-                                                {state.editModes.global && (
-                                                    <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('say')}>수정</button>
-                                                )}
-                                            </>
-                                        )}
-                                    </p>
-
-                                    <p className="mt-2 text-muted">
-                                        팔로워 13 팔로잉 10
-                                    </p>
-                                    <button className="btn btn-danger btn-sm mt-3">
-                                        비밀번호 변경
-                                    </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Personal Information */}
                             <section className="mt-4">
-                                <h3 className="border-bottom pb-2">개인 정보</h3>
-                                <div className="mt-4 px-3">
-                                    <div className="d-flex justify-content-between py-2 border-bottom">
+                                <h3 className="section-title">개인 정보</h3>
+                                <div className="section-content">
+                                    <div className="settings-item">
                                         <span>생년월일</span>
                                         <div>
-                                            {state.editModes.birthDate ? (
-                                                <div className="d-flex align-items-center">
+                                            {editModes.birthDate ? (
+                                                <div className="button-group">
                                                     <DateSelector
-                                                        value={state.userData.temp.birthDate}
-                                                        onChange={handleDatePartChange}
-                                                    />
-                                                    <button onClick={() => {
-                                                        setState(prev => ({
-                                                            ...prev,
-                                                            userData: {
-                                                                ...prev.userData,
-                                                                current: {
-                                                                    ...prev.userData.current,
-                                                                    birthDate: prev.userData.temp.birthDate
-                                                                }
-                                                            },
-                                                            editModes: {
-                                                                ...prev.editModes,
-                                                                birthDate: false
+                                                        value={userData.temp.birthDate}
+                                                        onChange={(part, value) => {
+                                                            const [year, month, day] = (userData.temp.birthDate || '').split('-');
+                                                            const newDate = {
+                                                                year: part === 'year' ? value : year || '',
+                                                                month: part === 'month' ? value : month || '',
+                                                                day: part === 'day' ? value : day || ''
+                                                            };
+                                                            
+                                                            if (newDate.year || newDate.month || newDate.day) {
+                                                                updateTempField('birthDate', `${newDate.year}-${newDate.month}-${newDate.day}`);
                                                             }
-                                                        }));
-                                                    }} className="btn btn-sm btn-success me-2">확인</button>
+                                                        }}
+                                                    />
+                                                    <button onClick={() => handleFieldSave('birthDate')} className="btn btn-sm btn-success">확인</button>
                                                     <button onClick={() => toggleEditMode('birthDate')} className="btn btn-sm btn-secondary">취소</button>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <span className="text-muted">{state.userData.current.birthDate}</span>
-                                                    {state.editModes.global && (
+                                                    <span className="text-muted">{userData.current.birthDate}</span>
+                                                    {editModes.global && (
                                                         <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('birthDate')}>수정</button>
                                                     )}
                                                 </>
@@ -406,42 +405,26 @@ function Mypage() {
                                         </div>
                                     </div>
 
-                                    <div className="d-flex justify-content-between py-2 border-bottom">
+                                    <div className="settings-item">
                                         <span>전화번호</span>
                                         <div>
-                                            {state.editModes.phone ? (
-                                                <div className="d-flex align-items-center">
+                                            {editModes.phone ? (
+                                                <div className="button-group">
                                                     <input 
                                                         type="text" 
-                                                        value={state.userData.temp.phone}
+                                                        value={userData.temp.phone}
                                                         onChange={(e) => updateTempField('phone', formatPhoneNumber(e.target.value))}
                                                         placeholder="전화번호"
-                                                        className="me-2"
+                                                        className="field-input"
                                                         maxLength={13}
-                                                        style={{width: '150px'}}
                                                     />
-                                                    <button onClick={() => {
-                                                        setState(prev => ({
-                                                            ...prev,
-                                                            userData: {
-                                                                ...prev.userData,
-                                                                current: {
-                                                                    ...prev.userData.current,
-                                                                    phone: prev.userData.temp.phone
-                                                                }
-                                                            },
-                                                            editModes: {
-                                                                ...prev.editModes,
-                                                                phone: false
-                                                            }
-                                                        }));
-                                                    }} className="btn btn-sm btn-success me-2">확인</button>
+                                                    <button onClick={() => handleFieldSave('phone')} className="btn btn-sm btn-success">확인</button>
                                                     <button onClick={() => toggleEditMode('phone')} className="btn btn-sm btn-secondary">취소</button>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <span className="text-muted">{state.userData.current.phone}</span>
-                                                    {state.editModes.global && (
+                                                    <span className="text-muted">{userData.current.phone}</span>
+                                                    {editModes.global && (
                                                         <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('phone')}>수정</button>
                                                     )}
                                                 </>
@@ -449,41 +432,25 @@ function Mypage() {
                                         </div>
                                     </div>
 
-                                    <div className="d-flex justify-content-between py-2">
+                                    <div className="settings-item">
                                         <span>이메일</span>
                                         <div>
-                                            {state.editModes.email ? (
-                                                <div className="d-flex align-items-center">
+                                            {editModes.email ? (
+                                                <div className="button-group">
                                                     <input 
                                                         type="email" 
-                                                        value={state.userData.temp.email}
+                                                        value={userData.temp.email}
                                                         onChange={(e) => updateTempField('email', e.target.value)}
                                                         placeholder="example@email.com"
-                                                        className="me-2"
-                                                        style={{width: '200px'}}
+                                                        className="field-input email"
                                                     />
-                                                    <button onClick={() => {
-                                                        setState(prev => ({
-                                                            ...prev,
-                                                            userData: {
-                                                                ...prev.userData,
-                                                                current: {
-                                                                    ...prev.userData.current,
-                                                                    email: prev.userData.temp.email
-                                                                }
-                                                            },
-                                                            editModes: {
-                                                                ...prev.editModes,
-                                                                email: false
-                                                            }
-                                                        }));
-                                                    }} className="btn btn-sm btn-success me-2">확인</button>
+                                                    <button onClick={() => handleFieldSave('email')} className="btn btn-sm btn-success">확인</button>
                                                     <button onClick={() => toggleEditMode('email')} className="btn btn-sm btn-secondary">취소</button>
                                                 </div>
                                             ) : (
                                                 <>
-                                                    <span className="text-muted">{state.userData.current.email}</span>
-                                                    {state.editModes.global && (
+                                                    <span className="text-muted">{userData.current.email}</span>
+                                                    {editModes.global && (
                                                         <button className="btn btn-sm btn-primary ms-2" onClick={() => toggleEditMode('email')}>수정</button>
                                                     )}
                                                 </>
@@ -492,11 +459,11 @@ function Mypage() {
                                     </div>
                                 </div>
                             </section>
-                            {/* Personal Settings */}
+
                             <section className="mt-5">
-                                <h3 className="border-bottom pb-2">개인 설정</h3>
-                                <div className="mt-4">
-                                    <div className="d-flex justify-content-between py-2 border-bottom">
+                                <h3 className="section-title">개인 설정</h3>
+                                <div className="section-content">
+                                    <div className="settings-item">
                                         <span>알림</span>
                                         <a href="#" className="text-muted">
                                             <div className="form-check form-switch">
@@ -504,7 +471,7 @@ function Mypage() {
                                             </div>
                                         </a>
                                     </div>
-                                    <div className="d-flex justify-content-between py-2">
+                                    <div className="settings-item">
                                         <span>화면 모드</span>
                                         <a href="#" className="text-muted">
                                             라이트 <i className="fas fa-chevron-down ms-1"></i>
@@ -513,9 +480,8 @@ function Mypage() {
                                 </div>
                             </section>
 
-                            {/* Category Settings */}
                             <section className="mt-5">
-                                <h3 className="border-bottom pb-2">카테고리 설정</h3>
+                                <h3 className="section-title">카테고리 설정</h3>
                                 <button className="btn btn-light text-muted btn-sm mt-3">
                                     생성
                                 </button>
@@ -524,8 +490,7 @@ function Mypage() {
                                         <div className="d-flex justify-content-between align-items-center mt-2" key={index}>
                                             <div className="d-flex align-items-center">
                                                 <div
-                                                    className={`rounded-circle me-2 bg-${["danger", "warning", "primary"][index]}`}
-                                                    style={{ width: "1rem", height: "1rem" }}
+                                                    className={`category-dot ${["danger", "warning", "primary"][index]}`}
                                                 ></div>
                                                 <span>{category}</span>
                                             </div>
@@ -535,7 +500,6 @@ function Mypage() {
                                 </div>
                             </section>
 
-                            {/* Delete Button */}
                             <div className="mt-5 text-end">
                                 <button className="btn btn-danger">계정 삭제</button>
                             </div>
