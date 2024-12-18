@@ -5,56 +5,75 @@
     background-color: rgb(219, 219, 219);
     width: 100%;
     padding: 10px;
-    margin-left: 60px;
+    margin-left: 70px;
+    margin-top: 75px;
 }
-.sidebar{
-    position: fixed; /* 사이드바 고정 */
-    background-color: #2C2C2C;
-    top:60;
+.header{
+  height: 75px;
+  width: 100%;
+}
+.headerbar {
+    position: fixed;
+    top: 0;
     left: 0;
-    height: 100%;
-    width: 60px;
-    flex-shrink: 0;
-    padding: 10px;
+    right: 0;
+    height: 75px;
+    background-color: white;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
+.headerbar-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+.headerbar-nav {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+}
 .todoitem{
-
     padding: 3px;
     width: 200px;
     margin:auto;
     margin-bottom: 5px;
     margin-top: 5px;
     border-radius: 5px;
+    border: 1px solid black;
+    background-color: rgba(21, 255, 0, 0.1);
     
 }
 .Todoslist{
     width: 220px;
     padding: 5px;
     align-items:center;
-    background-color: azure;
-}
-.line {
-    width: 100%;
-    height: 1px;
-    background-color: gray;
-}
-.sideicon{
-    margin-bottom: 3px;
-    margin-top: 3px;
+    border: 1px dotted;
 }
 .main{
     display: flex;
-    
+    margin-left: 70px;
 }
 .calendar{
     width: 100%;
-    padding: 10px;
-    margin-left: 10px;
     background-color: rgb(187, 187, 187);
-    height: 50px;
-    border-radius: 10px;
+    
 }
 .feedback{
     width: 100%;
+    border-color: #2C2C2C;
+    border: 1px solid #6c757d;
+    
+}
+
+
+
+
+.form-control:focus {
+    outline: none !important;
+    border-color: #aaa !important;
+    box-shadow: 0 0 0 1px #aaa !important;
+    -webkit-box-shadow: 0 0 0 1px #aaa !important;
 }

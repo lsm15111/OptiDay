@@ -1,0 +1,118 @@
+
+.headerbar {
+    height: 75px;
+    min-height: 75px;
+    background-color: white;
+}
+
+.headerbar-container {
+    height: 100%;
+}
+
+.headerbar-nav {
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.headerbar-left {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.headerbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: black;
+}
+
+.headerbar-items {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.headerbar-link {
+    font-size: 18px;
+}
+.friend_img{
+    background-color: #929292;
+    height: 40px;
+    width: 40px;
+    justify-self:center;
+    align-content: space-between;
+    border-radius: 50%;
+  }
+
+.right-menu {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+.menu-button {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+}
+
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-input {
+    transition: all 0.3s ease-in-out;
+    width: 40px;
+    padding: 8px 40px 8px 40px;
+    border: 1px solid #e0e0e0;
+    border-radius: 20px;
+    background-color: #f5f5f5;
+    outline: none;
+    cursor: pointer;
+}
+
+.search-input.active {
+    width: 250px;
+    cursor: text;
+}
+
+.search-button {
+    position: absolute;
+    left: 15px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+}
+
+@media screen and (max-width: 768px) {
+    .right-menu {
+        display: none;
+    }
+    
+    .right-menu.show {
+        display: flex;
+        position: absolute;
+        top: 75px;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        flex-direction: column;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        z-index: 1000;
+    }
+
+    .menu-button {
+        display: flex;
+        align-items: center;
+    }
+}

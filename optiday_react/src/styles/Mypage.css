@@ -1,0 +1,150 @@
+.contents {
+    background-color: #f8f9fa;
+    font-family: sans-serif;
+}
+/* Profile Section */
+.profile_img {
+    width: 200px;
+    height: 200px;
+    background-color: #e9ecef;
+    border-radius: 50%;
+}
+
+.profile-section {
+    margin-bottom: 2rem;
+}
+
+.profile-default-button{
+    width: 200px;
+    height: 40px;
+}
+
+/* Form Fields */
+.field-container {
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.field-label {
+    width: 200px;
+}
+
+.field-input {
+    width: 150px;
+    margin-right: 0.5rem;
+}
+
+.field-input.email {
+    width: 200px;
+}
+
+.field-input.name {
+    width: 100px;
+}
+
+.field-input.tag {
+    width: 80px;
+}
+
+.field-input.say {
+    width: 300px;
+}
+
+/* Category Styles */
+.category-dot {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.category-dot.danger {
+    background-color: var(--bs-danger);
+}
+
+.category-dot.warning {
+    background-color: var(--bs-warning);
+}
+
+.category-dot.primary {
+    background-color: var(--bs-primary);
+}
+
+/* Date Selector */
+.date-selector {
+    display: flex;
+    width: 250px;
+    margin-right: 0.5rem;
+}
+
+.date-selector select {
+    margin-right: 0.25rem;
+}
+
+.date-selector select:last-child {
+    margin-right: 0;
+}
+
+.year-select {
+    width: 100px;
+}
+
+.month-select,
+.day-select {
+    width: 70px;
+}
+
+/* Sections */
+.section-title {
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.section-content {
+    padding: 1rem;
+}
+
+/* Settings */
+.settings-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.settings-item:last-child {
+    border-bottom: none;
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    align-items: center;
+}
+
+.button-group .btn {
+    margin-right: 0.5rem;
+}
+
+.button-group .btn:last-child {
+    margin-right: 0;
+}
+
+/* Icon Container */
+.icon-container {
+    border-radius: 50%;
+    width: 40px; /* Set fixed width */
+    height: 40px; /* Set fixed height */
+    display: flex; /* Center icon vertically and horizontally */
+    align-items: center;
+    justify-content: center;
+}
+
+.icon-container:hover {
+    background-color: rgba(200, 200, 200, 0.5); /* Lighter gray background on hover */
+    border-radius: 50%; /* Ensure it stays circular */
+    transition: background-color 0.3s ease; /* Smooth transition effect */
+}
