@@ -11,7 +11,7 @@ function Main(){
             <div className="w-100 p-3">
                 <div className="feedback p-3 rounded">피드백
                 </div>
-              </div>
+            </div>
         </div>
     )
 }
