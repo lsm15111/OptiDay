@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Calendar, ChartColumn, CirclePlus, House } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-// import Todo from '../modals/Todo';
+import Todo from '../modals/Todo';
 import '../../styles/Sidebar.css';
 
 function Sidebar() {
@@ -9,6 +9,9 @@ function Sidebar() {
     const location = useLocation();
     const currentPath = location.pathname;
 
+    const closeModal = () => {
+        setIsTodoOpen(false);
+    };
     return (
         <div className="sidebar">
             <Link 
@@ -39,7 +42,7 @@ function Sidebar() {
             >
                 <ChartColumn size={30} className="text-white" />
             </Link>
-            {/* <Todo isOpen={isTodoOpen} onClose={() => setIsTodoOpen(false)} /> */}
+            <Todo isOpen={isTodoOpen} onClose={closeModal} />
         </div>
     );
 }
