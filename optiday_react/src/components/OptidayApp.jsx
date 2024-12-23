@@ -5,6 +5,8 @@ import Feedback from "./Feedback"
 import Main from "./Main"
 import Login from "./Login"
 import Mypage from "./Mypage"
+import Follow from "./Follow"
+
 import '../styles/OptidayApp.css'
 
 function OptidayApp(){
@@ -21,6 +23,7 @@ function OptidayApp(){
           <Route path='/feedback' element={<Feedback/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/mypage' element={<Mypage/>}/>
+          <Route path='/follow' element={<Follow/>}/>
         </Routes>
         </div>
     </div>
