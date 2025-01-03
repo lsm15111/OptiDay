@@ -1,20 +1,22 @@
 package com.optiday_min.optiday.User;
 
+import com.optiday_min.optiday.Todo.Todo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-public class UserResource {
+public class UserController {
+    private UserRepository service;
 
-    private UserDaoService service;
-
-    public UserResource(UserDaoService userDaoService) {
-        this.service = userDaoService;
+    public UserController(UserRepository userService) {
+        this.service = userService;
     }
+
     @GetMapping("/user/{id}")
-    public User retrieveUser(@PathVariable int id) {
-        User user = service.findById(id);
+    public Optional<User> retrieveUser(@PathVariable Integer userId) {
+        Optional<User> user = service.findById(userId);
         return user;
     }
 
@@ -30,20 +32,16 @@ public class UserResource {
     }
     // 사용자 수정
     @PostMapping("/user/{id}")
-    public void updateUser(@PathVariable int id, @RequestBody User user) {
-        service.deleteById(id);
-        user.setId(id);
+    public void updateUser(@PathVariable Integer userId, @RequestBody User user) {
+        service.deleteById(userId);
+        user.setId(userId);
         service.save(user);
     }
     // 사용자 삭제
     @DeleteMapping("/user/{id}")
-    public void deleteUser(@PathVariable int id){
-        service.deleteById(id);
+    public void deleteUser(@PathVariable Integer userId){
+        service.deleteById(userId);
     }
-
-
-
-
 
 
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "user_details") // 테이블 이름
@@ -18,8 +19,6 @@ public class User {
     private Integer id;
     @Size(min=2, max=10, message = "Name Length 2~10")
     private String name;
-    @Size(min=4, max=4, message = "Tag Length 4")
-    private String tag;
     @Size(max=15, message = "Message Max Length 15")
     private String message;
     // **미래 금지 제약필요
@@ -30,17 +29,15 @@ public class User {
     private long phone;
 
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
-    @JsonIgnore
-    private List<Todo> todos;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Todo> todos = new ArrayList<>();
 
     public User() {
     }
 
-    public User(Integer id, String name, String tag, String message, LocalDate birthday, String email, long phone) {
+    public User(Integer id, String name, String message, LocalDate birthday, String email, long phone) {
         this.id = id;
         this.name = name;
-        this.tag = tag;
         this.message = message;
         this.birthday = birthday;
         this.email = email;
@@ -61,14 +58,6 @@ public class User {
 
     public void setName(@Size(min = 2, max = 10) String name) {
         this.name = name;
-    }
-
-    public String getTag() {
-        return tag;
-    }
-
-    public void setTag(String tag) {
-        this.tag = tag;
     }
 
     public String getMessage() {
@@ -114,13 +103,12 @@ public class User {
     @Override
     public String toString() {
         return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", tag=" + tag +
-                ", message='" + message + '\'' +
-                ", birthday=" + birthday +
+                "phone=" + phone +
                 ", email='" + email + '\'' +
-                ", phone=" + phone +
+                ", birthday=" + birthday +
+                ", message='" + message + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
                 '}';
     }
 }
