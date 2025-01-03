@@ -1,13 +1,14 @@
 package com.optiday_min.optiday.User;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.optiday_min.optiday.Todo.Todo;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity(name = "user_details") // 테이블 이름
 public class User {
@@ -15,17 +16,23 @@ public class User {
     @Id
     @GeneratedValue
     private Integer id;
-    @Size(min=2, max=10) // 제약
+    @Size(min=2, max=10, message = "Name Length 2~10")
     private String name;
-    @Size(min=4, max=4)
+    @Size(min=4, max=4, message = "Tag Length 4")
     private String tag;
-    @Size(max=15)
+    @Size(max=15, message = "Message Max Length 15")
     private String message;
     // **미래 금지 제약필요
+    @Past(message = "Birthday is not in the past")
     private LocalDate birthday;
     @Email
     private String email;
     private long phone;
+
+
+    @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)
+    @JsonIgnore
+    private List<Todo> todos;
 
     public User() {
     }
@@ -94,6 +101,14 @@ public class User {
 
     public void setPhone(long phone) {
         this.phone = phone;
+    }
+
+    public List<Todo> getTodos() {
+        return todos;
+    }
+
+    public void setTodos(List<Todo> todos) {
+        this.todos = todos;
     }
 
     @Override
