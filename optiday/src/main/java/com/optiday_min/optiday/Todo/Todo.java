@@ -9,25 +9,34 @@ public class Todo {
 
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
 
     private String title;
 
     private String description;
 
-    private String status;
-
+    private boolean status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JsonIgnore
     private User user;
 
+    public Todo(){
+    }
 
-    public int getId() {
+    public Todo(Integer id,String title, String description, boolean status,User user) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.status = status;
+        this.user = user;
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -47,11 +56,11 @@ public class Todo {
         this.description = description;
     }
 
-    public String getStatus() {
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
 
