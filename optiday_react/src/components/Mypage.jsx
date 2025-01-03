@@ -4,6 +4,7 @@ import { Circle, X } from 'lucide-react';
 
 function Mypage() {
     const defaultProfileImg = '/images/user_default.png'; // default image URL (정적)
+    
     const [userData, setUserData] = useState({ // 사용자 정보 데이터
         current: {
             name: "김코드",
@@ -30,6 +31,7 @@ function Mypage() {
     });
     
     const categories = ["계획", "공부", "여행"]; // 카테고리 목록
+
 
     const [editModes, setEditModes] = useState({ // 각 수정 버튼의 상태 (true: 수정 중, false: 수정 완료)
         name: false,
@@ -453,12 +455,6 @@ function Mypage() {
                                 <div className="settings-item">
                                     <span>알림</span>
                                         <div className="form-check form-switch">
-                                            <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
-                                        </div>
-                                </div>
-                                <div className="settings-item">
-                                    <span>화면 모드</span>
-                                    <div className="form-check form-switch">
                                             <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
                                         </div>
                                 </div>
