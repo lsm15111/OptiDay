@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.Todo;
+package com.optiday_min.optiday.service;
 
 import org.springframework.stereotype.Service;
 
