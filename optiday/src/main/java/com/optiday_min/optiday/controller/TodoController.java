@@ -20,24 +20,25 @@ public class TodoController {
         this.todoRepository = todoRepository;
     }
     // User Todo 조회
-    @GetMapping("/user/{memberId}/todos")
+    @GetMapping("/member/{memberId}/todos")
     public List<Todo> retrieveTodoForUsername(@PathVariable int memberId){
-        Optional<Member> user = memberRepository.findById(memberId);
+        Optional<Member> member = memberRepository.findById(memberId);
         // 못찾을때 에러필요
-        return user.get().getTodos();
+        return member.get().getTodos();
     }
 
     // Todo 생성
-    @PostMapping("/user/{memberId}/todos")
+    @PostMapping("/member/{memberId}/todo")
     public void createTodoForUser(@PathVariable int memberId , @RequestBody Todo todo){
         Optional<Member> member = memberRepository.findById(memberId);
         todo.setMember(member.get());
         todoRepository.save(todo);
     }
     // Todo 삭제
-    @DeleteMapping("/user/{memberId}/todos/{tid}")
+    @DeleteMapping("/member/{memberId}/todos/{tid}")
     public void deleteTodoForUser(@PathVariable int memberId,@PathVariable int tid){
         // uid에 맞는 user의 todos에서 tid에 맞는 todo 를 찾아 삭제 구현하기
+        Optional<Member> member = memberRepository.findById(memberId);
         todoRepository.deleteById(tid);
     }
     
