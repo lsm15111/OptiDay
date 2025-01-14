@@ -10,14 +10,14 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Builder
-public class SignUpRequest {
+public class SignUpRequestDto {
     private String name;
     private String password;
     private String email;
     private String phone;
 
-    private LocalDate birthdate=null; //기본값
-    private String message="";
+    private LocalDate birthdate; //기본값
+    private String message;
 
     // User 엔티티 객체 생성
     public Member toEntity(){
