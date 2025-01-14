@@ -1,7 +1,10 @@
-package com.optiday_min.optiday.security;
+package com.optiday_min.optiday.jwt;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
@@ -11,7 +14,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 public class JwtTokenService {
 
     private final JwtEncoder jwtEncoder;
@@ -40,4 +43,5 @@ public class JwtTokenService {
                 .encode(JwtEncoderParameters.from(claims))
                 .getTokenValue();
     }
+
 }

@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.security;
+package com.optiday_min.optiday.jwt;
 
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.jose.jwk.JWKSet;
@@ -27,7 +27,7 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
-@Configuration
+//@Configuration
 @EnableWebSecurity
 public class JwtSecurityConfig {
 
@@ -49,6 +49,7 @@ public class JwtSecurityConfig {
 
         return new InMemoryUserDetailsManager(user);
     }
+
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {

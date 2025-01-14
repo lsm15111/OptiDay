@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.security;
+package com.optiday_min.optiday.jwt;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-@RestController
+//@RestController
 public class JwtAuthenticationController {
 
     private final JwtTokenService tokenService;
@@ -20,6 +20,8 @@ public class JwtAuthenticationController {
         this.authenticationManager = authenticationManager;
     }
 
+    // JWT 생성
+    // username,password 로 Token 생성
     @PostMapping("/authenticate")
     public ResponseEntity<JwtTokenResponse> generateToken(
             @RequestBody JwtTokenRequest jwtTokenRequest) {
@@ -36,4 +38,6 @@ public class JwtAuthenticationController {
 
         return ResponseEntity.ok(new JwtTokenResponse(token));
     }
+
+
 }
