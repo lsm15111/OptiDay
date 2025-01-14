@@ -7,7 +7,9 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -31,8 +33,17 @@ public class Member {
     private String email;
     private String phone;
 
+    // 나의 일정 목록
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Todo> todos = new ArrayList<>();
+
+    // 내가 팔로우한 사용자 목록
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Follow> following = new HashSet<>();
+
+    // 나를 팔로우한 사용자 목록
+    @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Follow> followers = new HashSet<>();
 
     @Override
     public String toString() {
