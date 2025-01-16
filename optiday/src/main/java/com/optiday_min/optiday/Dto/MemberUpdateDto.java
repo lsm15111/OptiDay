@@ -6,13 +6,16 @@ import java.time.LocalDate;
 
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ProfileDto {
+public class MemberUpdateDto {
+
     private String name;
     private String message;
+    private LocalDate birthdate;
     private String email;
-    private Integer followers;
-    private Integer following;
-    private LocalDate birthday;
     private String phone;
+
+
 }
