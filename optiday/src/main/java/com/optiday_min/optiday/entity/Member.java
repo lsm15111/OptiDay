@@ -1,5 +1,7 @@
 package com.optiday_min.optiday.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
@@ -7,9 +9,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -17,13 +17,12 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
 public class Member {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Size(min=2, max=10, message = "Name Length 2~10")
-    private String name;
+    private String username;
     private String password;
     @Size(max=15, message = "Message Max Length 15")
     private String message;
@@ -35,15 +34,22 @@ public class Member {
 
     // 나의 일정 목록
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Todo> todos = new ArrayList<>();
 
-    // 내가 팔로우한 사용자 목록
+    // 내가 팔로우한 사람들
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> following = new HashSet<>();
+    private List<Follow> followings = new ArrayList<>();
 
-    // 나를 팔로우한 사용자 목록
+    // 나를 팔로우한 사람들
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Follow> followers = new HashSet<>();
+    private List<Follow> followers = new ArrayList<>();
+
+    // 나의 카테고리
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Category> categories = new ArrayList<>();
+
 
     @Override
     public String toString() {
@@ -53,7 +59,7 @@ public class Member {
                 ", birthday=" + birthdate +
                 ", message='" + message + '\'' +
                 ", password='" + password + '\'' +
-                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
                 ", id=" + id +
                 '}';
     }

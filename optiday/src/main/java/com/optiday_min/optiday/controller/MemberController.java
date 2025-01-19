@@ -1,5 +1,6 @@
 package com.optiday_min.optiday.controller;
 
+import com.optiday_min.optiday.Dto.MemberUpdateDto;
 import com.optiday_min.optiday.Dto.ProfileDto;
 import com.optiday_min.optiday.Dto.SignUpRequestDto;
 import com.optiday_min.optiday.service.MemberService;
@@ -14,24 +15,29 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class MemberController {
 
     private final MemberService memberService;
     private final MemberRepository memberRepository;
 
-
-    // 사용자 조회
-    @GetMapping("/member/{name}")
-    public Optional<Member> retrieveUser(@PathVariable String name) {
-        Optional<Member> member = memberRepository.findByName(name);
-        return member;
-    }
-
+    
+    //TODO : 관리자 전용 설정하기
     // 사용자 모두 출력
     @GetMapping("/members")
     public List<Member> user() {
         return memberRepository.findAll();
     }
+
+
+    // 사용자 조회
+    @GetMapping("/member/{username}")
+    public Optional<Member> retrieveUser(@PathVariable String username) {
+        Optional<Member> member = memberRepository.findByUsername(username);
+        return member;
+    }
+
+    
 
     // 사용자 생성 SignUpRequest DTO -> User Entity
     @PostMapping("/member")
@@ -45,12 +51,9 @@ public class MemberController {
     }
 
     // 사용자 수정
-    @PostMapping("/member/{memberId}")
-    public ResponseEntity<Member> updateUser(@PathVariable Integer memberId, @RequestBody Member member) {
-
-        member.setId(memberId);
-        memberRepository.save(member);
-        return ResponseEntity.ok(member);
+    @PutMapping("/member/{memberId}")
+    public void updateUser(@PathVariable Integer memberId, @RequestBody MemberUpdateDto memberUpdateDto) {
+        memberService.toMember(memberId, memberUpdateDto);
     }
     // 사용자 삭제
     @DeleteMapping("/member/{memberId}")
@@ -59,8 +62,8 @@ public class MemberController {
     }
 
     // 사용자 프로필 조회
-    @GetMapping("/member/{name}/profile")
-    public ProfileDto retrieveProfile(@PathVariable String name) {
-        return memberService.getUserWithFollowCount(name);
+    @GetMapping("/member/{username}/profile")
+    public ProfileDto retrieveProfile(@PathVariable String username) {
+        return memberService.getUserWithFollowCount(username);
     }
 }
