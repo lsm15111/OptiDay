@@ -65,7 +65,7 @@ public class FollowService {
                 .stream()
                 .map(follow->{
                     Optional<Member> follower = memberRepository.findById(follow.getFollower().getId());
-                    return new FollowDto(follower.get().getId(),follower.get().getName(),follower.get().getEmail());
+                    return new FollowDto(follower.get().getId(),follower.get().getUsername(),follower.get().getEmail());
                 }) // Follower의 ID만 추출
                 .collect(Collectors.toList());
 
@@ -79,7 +79,7 @@ public class FollowService {
                 .stream()
                 .map(follow -> {
                     Optional<Member> following = memberRepository.findById(follow.getFollowing().getId());
-                    return new FollowDto(following.get().getId(),following.get().getName(),following.get().getEmail());
+                    return new FollowDto(following.get().getId(),following.get().getUsername(),following.get().getEmail());
 
                 })
                 .collect(Collectors.toList());

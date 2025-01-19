@@ -8,6 +8,6 @@ import lombok.Getter;
 public class FollowDto {
 
     private Integer id;
-    private String name;
+    private String username;
     private String email;
 }
