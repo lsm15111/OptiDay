@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import { Calendar, ChartColumn, CirclePlus, House, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import Todo from '../modals/Todo';
+import TodoModal from '../modals/TodoModal';
 import '../../styles/Sidebar.css';
+import { useAuth } from "../../security/AuthContext";
 
 function Sidebar() {
     const [isTodoOpen, setIsTodoOpen] = useState(false);
     const location = useLocation();
     const currentPath = location.pathname;
+
+    const {username} = useAuth()
+    
+
+
 
     const closeModal = () => {
         setIsTodoOpen(false);
@@ -25,7 +31,7 @@ function Sidebar() {
             </Link>
             <div className="line m-0 w-100" />
             <Link 
-                to={'/'} 
+                to={`/main/${username}`}
                 className={`sideicon ${currentPath === '/' ? 'active' : ''}`}
             >
                 <House size={30} className="text-white" />
@@ -50,7 +56,7 @@ function Sidebar() {
             </Link>
 
             
-            <Todo isOpen={isTodoOpen} onClose={closeModal} />
+            <TodoModal isOpen={isTodoOpen} onClose={closeModal} />
         </div>
     );
 }

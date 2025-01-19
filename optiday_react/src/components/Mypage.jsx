@@ -4,12 +4,10 @@ import { Circle, X } from 'lucide-react';
 
 function Mypage() {
     const defaultProfileImg = '/images/user_default.png'; // default image URL (정적)
-    
     const [userData, setUserData] = useState({ // 사용자 정보 데이터
         current: {
             name: "김코드",
-            tag: "1234",
-            say: "오늘도 화이팅!",
+            message: "오늘도 화이팅!",
             birthDate: "",
             phone: "010-1234-5678",
             email: "example@email.com",
@@ -19,14 +17,11 @@ function Mypage() {
         },
         temp: {
             name: "김코드",
-            tag: "1234",
-            say: "오늘도 화이팅!",
+            message: "오늘도 화이팅!",
             birthDate: "",
             phone: "010-1234-5678",
             email: "example@email.com",
-            followers: 13,
-            following: 10,
-            profileImg: '',
+            profileImg: defaultProfileImg,
         }
     });
     
@@ -35,7 +30,7 @@ function Mypage() {
 
     const [editModes, setEditModes] = useState({ // 각 수정 버튼의 상태 (true: 수정 중, false: 수정 완료)
         name: false,
-        say: false,
+        message: false,
         birthDate: false,
         phone: false,
         email: false
@@ -43,8 +38,7 @@ function Mypage() {
 
     const [errors, setErrors] = useState({ // 각 폼의 규칙 검증
         name: false,
-        tag: false,
-        say: false,
+        message: false,
         birthDate: false,
         phone: false,
         email: false
@@ -57,20 +51,13 @@ function Mypage() {
         }));
     };
 
-    const toggleEditMode = (field) => {
+    const toggleEditMode = (field) => { // 수정 모드 들어가기
         setEditModes(prev => ({
             ...prev,
             [field]: !prev[field]
         }));
     };
 
-    const handleCancelEdit = (field) => {
-        setUserData(prev => ({
-            ...prev,
-            temp: { ...prev.current }
-        }));
-        toggleEditMode(field);
-    };
 
     const handleFieldSave = (fields) => { // 수정데이터 검증
         let isValid = true;
@@ -81,15 +68,6 @@ function Mypage() {
                 isValid = false;
             } else {
                 setErrors(prev => ({ ...prev, name: false }));
-            }
-        }
-
-        if (fields.includes('tag')) {
-            if (userData.temp.tag.length !== 4) {
-                setErrors(prev => ({ ...prev, tag: true }));
-                isValid = false;
-            } else {
-                setErrors(prev => ({ ...prev, tag: false }));
             }
         }
 
@@ -272,29 +250,18 @@ function Mypage() {
                                                     minLength={2}
                                                     maxLength={10}
                                                     id="name"
-                                                />#
-                                                <input 
-                                                    type="text" 
-                                                    value={userData.temp.tag}
-                                                    onChange={(e) => updateTempField('tag', e.target.value)}
-                                                    placeholder="태그"
-                                                    className="field-input tag"
-                                                    minLength={4}
-                                                    maxLength={4}
-                                                    id="tag"
                                                 />
                                                 <div className="d-flex align-items-center">
                                                     <div className="icon-container" style={{ marginRight: '10px' }}>
-                                                        <Circle color="green" size={24} onClick={() => handleFieldSave(['name','tag'])} style={{ cursor: 'pointer' }} />
+                                                        <Circle color="green" size={24} onClick={() => handleFieldSave(['name'])} style={{ cursor: 'pointer' }} />
                                                     </div>
                                                     <div className="icon-container">
-                                                        <X color="red" size={24} onClick={() => handleCancelEdit('name')} style={{ cursor: 'pointer' }} />
+                                                        <X color="red" size={24} onClick={() => toggleEditMode('name')} style={{ cursor: 'pointer' }} />
                                                     </div>
                                                 </div>
                                                 
                                             </div>
                                             {errors.name && <span className="text-danger ms-2 fs-6">이름을 두글자 이상으로 작성해주세요.</span>}
-                                                {errors.tag && <span className="text-danger ms-2 fs-6">4글자 태그를 입력해주세요.</span>}
                                         </div>
                                     ) : (
                                         <div className="d-flex align-items-center">
@@ -303,30 +270,30 @@ function Mypage() {
                                         </div>
                                     )}
                                 </h3>
-                                    {editModes.say ? (
+                                    {editModes.message ? (
                                         <div className="button-group">
                                             <input 
                                                 type="text" 
-                                                value={userData.temp.say}
-                                                onChange={(e) => updateTempField('say', e.target.value)}
+                                                value={userData.temp.message}
+                                                onChange={(e) => updateTempField('message', e.target.value)}
                                                 placeholder="상태메시지"
-                                                className="field-input say"
-                                                id="say-input"
-                                                name="say"
+                                                className="field-input message"
+                                                id="message-input"
+                                                name="message"
                                             />
                                             <div className="d-flex align-items-center">
                                                 <div className="icon-container" style={{ marginRight: '10px' }}>
-                                                    <Circle color="green" size={24} onClick={() => handleFieldSave(['say'])} style={{ cursor: 'pointer' }} />
+                                                    <Circle color="green" size={24} onClick={() => handleFieldSave(['message'])} style={{ cursor: 'pointer' }} />
                                                 </div>
                                                 <div className="icon-container">
-                                                    <X color="red" size={24} onClick={() => toggleEditMode('say')} style={{ cursor: 'pointer' }} />
+                                                    <X color="red" size={24} onClick={() => toggleEditMode('message')} style={{ cursor: 'pointer' }} />
                                                 </div>
                                             </div>
                                         </div>
                                     ) : (
                                         <>
-                                            {userData.current.say}
-                                            <span className="text-secondary" style={{ fontSize: '16px', cursor: 'pointer', marginLeft: '10px' }} onClick={() => toggleEditMode('say')}>수정</span>
+                                            {userData.current.message}
+                                            <span className="text-secondary" style={{ fontSize: '16px', cursor: 'pointer', marginLeft: '10px' }} onClick={() => toggleEditMode('message')}>수정</span>
                                         </>
                                     )}
                                 <p className="mt-2 text-muted">
@@ -346,7 +313,7 @@ function Mypage() {
                         </div>
                         {/* 개인 정보 레이어 */}
                         <section className="mt-4">
-                            <h3 className="section-title">개인 정보</h3>
+                            <h3 className="section-title text-start">개인 정보</h3>
                             <div className="section-content">
                                 <div className="settings-item">
                                     <span>생년월일</span>
@@ -450,7 +417,7 @@ function Mypage() {
                         </section>
                         {/* 개인 설정 레이어 */}
                         <section className="mt-5">
-                            <h3 className="section-title">개인 설정</h3>
+                            <h3 className="section-title text-start">개인 설정</h3>
                             <div className="section-content">
                                 <div className="settings-item">
                                     <span>알림</span>
@@ -458,26 +425,6 @@ function Mypage() {
                                             <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
                                         </div>
                                 </div>
-                            </div>
-                        </section>
-                        {/* 카테고리 설정 레이어 */}
-                        <section className="mt-5">
-                            <h3 className="section-title">카테고리 설정</h3>
-                            <button className="btn btn-light text-muted btn-sm mt-3">
-                                생성
-                            </button>
-                            <div className="mt-4">
-                                {categories.map((category, index) => (
-                                    <div className="d-flex justify-content-between align-items-center mt-2" key={index}>
-                                        <div className="d-flex align-items-center">
-                                            <div
-                                                className={`category-dot ${["danger", "warning", "primary"][index]}`}
-                                            ></div>
-                                            <span>{category}</span>
-                                        </div>
-                                        <span className="text-muted">{index % 2 === 0 ? "공개" : "비공개"}</span>
-                                    </div>
-                                ))}
                             </div>
                         </section>
                         <div className="mt-5 text-end">
