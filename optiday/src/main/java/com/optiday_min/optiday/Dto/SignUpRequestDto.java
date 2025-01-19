@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 public class SignUpRequestDto {
-    private String name;
+    private String username;
     private String password;
     private String email;
     private String phone;
@@ -22,7 +22,7 @@ public class SignUpRequestDto {
     // User 엔티티 객체 생성
     public Member toEntity(){
         return Member.builder()
-                .name(this.name)
+                .username(this.username)
                 .password(this.password)
                 .message(this.message)
                 .email(this.email)

@@ -10,7 +10,7 @@ public class DtoMapper {
         int followersCount = member.getFollowers().size();
         int followingCount = member.getFollowings().size();
         return ProfileDto.builder()
-                .name(member.getName())
+                .username(member.getUsername())
                 .message(member.getMessage())
                 .birthday(member.getBirthdate())
                 .phone(member.getPhone())

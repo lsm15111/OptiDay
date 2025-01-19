@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-//@RestController
+@RestController
 public class JwtAuthenticationController {
 
     private final JwtTokenService tokenService;
@@ -22,15 +22,19 @@ public class JwtAuthenticationController {
 
     // JWT 생성
     // username,password 로 Token 생성
-    @PostMapping("/authenticate")
+    @PostMapping("/api/authenticate")
     public ResponseEntity<JwtTokenResponse> generateToken(
             @RequestBody JwtTokenRequest jwtTokenRequest) {
 
+
+
+        // 2. username,password => token 생성
         var authenticationToken =
                 new UsernamePasswordAuthenticationToken(
                         jwtTokenRequest.username(),
                         jwtTokenRequest.password());
 
+        // 3. token => 로그인 시도
         var authentication =
                 authenticationManager.authenticate(authenticationToken);
 
@@ -38,6 +42,7 @@ public class JwtAuthenticationController {
 
         return ResponseEntity.ok(new JwtTokenResponse(token));
     }
+
 
 
 }

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 @Setter
 @Builder
 public class ProfileDto {
-    private String name;
+    private String username;
     private String message;
     private String email;
     private Integer followers;
