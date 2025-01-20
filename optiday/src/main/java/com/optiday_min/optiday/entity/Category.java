@@ -26,12 +26,6 @@ public class Category {
     @JsonBackReference
     private Member member; // category 작성자
 
-    /*// 연관된 Todo 목록
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Todo> todos;*/
-
-
     @Override
     public String toString() {
         return "Category{" +
