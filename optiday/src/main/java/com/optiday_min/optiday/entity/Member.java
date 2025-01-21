@@ -1,6 +1,6 @@
 package com.optiday_min.optiday.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -27,6 +27,7 @@ public class Member {
     @Size(max=15, message = "Message Max Length 15")
     private String message;
     // **미래 금지 제약필요
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthdate;
     @Email
     private String email;
@@ -37,6 +38,11 @@ public class Member {
     @JsonManagedReference
     private List<Todo> todos = new ArrayList<>();
 
+    // 나의 카테고리
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Category> categories = new ArrayList<>();
+
     // 내가 팔로우한 사람들
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();
@@ -45,10 +51,6 @@ public class Member {
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
 
-    // 나의 카테고리
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<Category> categories = new ArrayList<>();
 
 
     @Override

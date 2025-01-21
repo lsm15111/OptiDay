@@ -1,10 +1,7 @@
 package com.optiday_min.optiday.service;
 
 
-import com.optiday_min.optiday.Dto.DtoMapper;
-import com.optiday_min.optiday.Dto.MemberUpdateDto;
-import com.optiday_min.optiday.Dto.ProfileDto;
-import com.optiday_min.optiday.Dto.SignUpRequestDto;
+import com.optiday_min.optiday.Dto.*;
 import com.optiday_min.optiday.entity.Member;
 import com.optiday_min.optiday.jpa.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -25,9 +22,8 @@ public class MemberService {
     public Member registerMember(SignUpRequestDto signUpRequest) {
         // 이름 중복 검사
         if(memberRepository.existsByUsername(signUpRequest.getUsername())){
-            throw new IllegalArgumentException("Member already exists with name: "+signUpRequest.getUsername());
+            throw new IllegalArgumentException("Username already exists");
         }
-        signUpRequest.setBirthdate(LocalDate.now());
         signUpRequest.setMessage("안녕하세요, "+signUpRequest.getUsername());
         signUpRequest.setPassword(hashPassword(signUpRequest.getPassword()));
         return memberRepository.save(signUpRequest.toEntity());
@@ -47,6 +43,10 @@ public class MemberService {
 
     // MemberUpdateDto -> Member
     public void toMember(Integer memberId,MemberUpdateDto memberUpdateDto){
+        //유저 네임 중복 시 예외
+        if (memberRepository.existsByUsername(memberUpdateDto.getUsername())) {
+            throw new IllegalArgumentException("Username already exists");
+        }
         Member member = memberRepository.findById(memberId)
                         .orElseThrow(()-> new EntityNotFoundException("Member not found"));
 
@@ -59,6 +59,21 @@ public class MemberService {
 
     }
 
+    public void updateProfile(String username, ProfileUpdateRequest profileUpdateRequest) {
+        //유저 네임 중복 시 예외
+        String rename = profileUpdateRequest.getUsername();
+        if (!(rename.equals(username))&&memberRepository.existsByUsername(rename)) {
+            throw new IllegalArgumentException("Username already exists");
+        }
+        Member member = memberRepository.findByUsername(username)
+                .orElseThrow(()-> new EntityNotFoundException("Member not found"));
+        member.setUsername(profileUpdateRequest.getUsername());
+        member.setMessage(profileUpdateRequest.getMessage());
+        member.setBirthdate(profileUpdateRequest.getBirthday());
+        member.setPhone(profileUpdateRequest.getPhone());
+        member.setEmail(profileUpdateRequest.getEmail());
+        memberRepository.save(member);
+    }
 
 
     // TODO : 팔로우 페이지에서 사용
