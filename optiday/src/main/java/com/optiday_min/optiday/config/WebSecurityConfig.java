@@ -26,7 +26,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/authenticate","api/member").permitAll()
 
                         .requestMatchers(PathRequest.toH2Console()).permitAll() // h2-console is a servlet and NOT recommended for a production
-                        .anyRequest().authenticated() // 모든 요청 허용 ** 보안 미적용
+                        .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement(session -> session

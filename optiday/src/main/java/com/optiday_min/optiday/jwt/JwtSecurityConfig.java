@@ -39,6 +39,7 @@ public class JwtSecurityConfig {
         return new ProviderManager(authenticationProvider);
     }
 
+    // 사용자 정적으로 관리
     @Bean
     public UserDetailsService userDetailsService() {
         UserDetails user = User.withUsername("min")
