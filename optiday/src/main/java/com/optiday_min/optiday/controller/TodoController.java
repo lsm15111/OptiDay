@@ -29,32 +29,32 @@ public class TodoController {
 
 
     // Member 모든 Todos 조회
-    @GetMapping("/member/{username}/todos")
+    @GetMapping("/members/{username}/todos")
     public List<Todo> retrieveTodoForUsername(@PathVariable String username){
         return todoService.getTodosByUsername(username);
     }
 
 
     // Member 하루 Todos 조회
-    @GetMapping("/member/{username}/daily")
+    @GetMapping("/members/{username}/daily")
     public Optional<List<Todo>> retrieveDailyTodosForUsername(@PathVariable String username){
         return todoService.getTodayTodosByUsername(username);
     }
 
     // Todo 생성
-    @PostMapping("/member/{username}/todo")
+    @PostMapping("/members/{username}/todo")
     public void createTodoForUser(@PathVariable String username , @RequestBody Todo todo){
         todoService.saveTodosByUsername(username,todo);
     }
 
     // Todo 수정
-    @PutMapping("/member/{username}/todo/{todoId}")
+    @PutMapping("/members/{username}/todo/{todoId}")
     public void updateTodoForUser(@PathVariable String username,@PathVariable Integer todoId, @RequestBody Todo todo){
         todoService.getUpdateTodosByOne(username,todoId,todo);
     }
 
     // Todo 삭제
-    @DeleteMapping("/member/{username}/todo/{todoId}")
+    @DeleteMapping("/members/{username}/todo/{todoId}")
     public void deleteTodoForUser(@PathVariable String username,@PathVariable Integer todoId){
         // uid에 맞는 user의 todos에서 tid에 맞는 Todos 를 찾아 삭제 구현하기
         todoService.deleteTodoById(todoId);

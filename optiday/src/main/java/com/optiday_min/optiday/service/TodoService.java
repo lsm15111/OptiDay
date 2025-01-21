@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -58,9 +57,9 @@ public class TodoService {
 
     
     //Member 의 Todos 생성
-    public void saveTodosByUsername(String name,Todo todo){
+    public void saveTodosByUsername(String username,Todo todo){
         // Member가 존재하는지 확인
-        Member member = memberRepository.findByUsername(name)
+        Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found"));
         // Todo에 Member 설정
         todo.setMember(member);
@@ -68,8 +67,8 @@ public class TodoService {
     }
     
     //Member 의 모든 Todos 조회
-    public List<Todo> getTodosByUsername(String name){
-        Optional<Member> member = memberRepository.findByUsername(name);
+    public List<Todo> getTodosByUsername(String username){
+        Optional<Member> member = memberRepository.findByUsername(username);
         return member.get().getTodos();
     }
     
@@ -77,7 +76,6 @@ public class TodoService {
     public List<Todo> getAllTodos(){
         return todoRepository.findAll();
     }
-
 
     public void deleteTodoById(Integer todoId) {
         todoRepository.deleteById(todoId);

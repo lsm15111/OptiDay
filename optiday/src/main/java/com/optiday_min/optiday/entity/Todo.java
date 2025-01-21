@@ -30,8 +30,6 @@ public class Todo {
     private Member member; // 연결된 카테고리
 
     private Integer categoryId;
-
-
     @Override
     public String toString() {
         return "Todo{" +
