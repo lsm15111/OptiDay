@@ -8,6 +8,7 @@ import com.optiday_min.optiday.jpa.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -18,16 +19,13 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberRepository memberRepository;
-    
-    
+
     //TODO : 관리자 설정
     //모든 팔로우 조회
     public List<Follow> findAll(){
-        return followRepository.findAll().stream().collect(Collectors.toList());
+        return new ArrayList<>(followRepository.findAll());
     }
 
-
-    
     //팔로우 저장
     public void follow(Integer followerId, Integer followingId) {
         Member follower = memberRepository.findById(followerId)
@@ -84,6 +82,5 @@ public class FollowService {
                 })
                 .collect(Collectors.toList());
     }
-
 
 }
