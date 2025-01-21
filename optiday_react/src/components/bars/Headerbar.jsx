@@ -2,7 +2,7 @@ import { Search, Menu } from "lucide-react"
 import { Link } from "react-router-dom"
 import { useState, useRef } from 'react'
 import '../../styles/Headerbar.css'
-import { useAuth } from "../../security/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 function Headerbar(){
     const [isSearchActive, setIsSearchActive] = useState(false);
@@ -13,7 +13,6 @@ function Headerbar(){
 
     const [message,setMessage] = useState(`${authContext.username}`);
 
-    console.log(authContext.username)
 
     const handleFocus = () => {
         setIsSearchActive(true);

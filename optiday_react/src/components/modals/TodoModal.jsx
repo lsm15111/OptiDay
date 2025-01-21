@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/TodoModal.css';
 import { createTodoApi } from '../../api/TodoApiService';
-import { useAuth } from '../../security/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 const TodoModal = ({ isOpen, onClose }) => {
     const [isPublic, setIsPublic] = useState(false);

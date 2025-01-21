@@ -3,7 +3,7 @@ import { Calendar, ChartColumn, CirclePlus, House, UserRound } from "lucide-reac
 import { Link, useLocation } from "react-router-dom";
 import TodoModal from '../modals/TodoModal';
 import '../../styles/Sidebar.css';
-import { useAuth } from "../../security/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 function Sidebar() {
     const [isTodoOpen, setIsTodoOpen] = useState(false);

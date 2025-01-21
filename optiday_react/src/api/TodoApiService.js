@@ -1,20 +1,20 @@
 import { apiClient } from './ApiClient'
 
 export const retrieveAllTodosForUsernameApi
-    = (username) => apiClient.get(`/member/${username}/todos`)
+    = (username) => apiClient.get(`/members/${username}/todos`)
 
 export const deleteTodoApi
-    = (username, id) => apiClient.delete(`/member/${username}/todo/${id}`)
+    = (username, id) => apiClient.delete(`/members/${username}/todo/${id}`)
 
 export const retrieveTodoApi
-    = (username, id) => apiClient.get(`/member/${username}/todo/${id}`)
+    = (username, id) => apiClient.get(`/members/${username}/todo/${id}`)
 
 export const updateTodoApi
-    = (username, todoid, todo) => apiClient.put(`/member/${username}/todo/${todoid}`, todo)
+    = (username, todoid, todo) => apiClient.put(`/members/${username}/todo/${todoid}`, todo)
 
 export const createTodoApi
-    = (username,  todo) => apiClient.post(`/member/${username}/todo`, todo)
+    = (username,  todo) => apiClient.post(`/members/${username}/todo`, todo)
 
 
 export const retrieveDailyTodosForUsernameApi
-    = (username) => apiClient.get(`/member/${username}/daily`);
+    = (username) => apiClient.get(`/members/${username}/daily`);

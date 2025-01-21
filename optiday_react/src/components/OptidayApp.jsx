@@ -9,7 +9,8 @@ import Signup from "./Signup"
 import Follow from "./Follow"
 
 import '../styles/OptidayApp.css'
-import AuthProvider, { useAuth } from "../security/AuthContext"
+import AuthProvider, { useAuth } from "../context/AuthContext"
+
 
 
 function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 보여주기
@@ -19,6 +20,7 @@ function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 
   }
   return <Navigate to="/login"/> // 사용자 인증 취소시 login page로
 }
+
 
 
 

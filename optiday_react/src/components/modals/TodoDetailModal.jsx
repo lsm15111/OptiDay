@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { updateTodoApi } from '../../api/TodoApiService';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/TodoDetailModal.css';
 
 function TodoDetail({ todo, onClose, username, handleUpdate }) {
@@ -10,8 +11,9 @@ function TodoDetail({ todo, onClose, username, handleUpdate }) {
     startDate: todo.startDate,
     endDate: todo.endDate,
     description: todo.description,
-    category: todo.category,
+    categoryId: todo.categoryId,
   });
+  const { categories } = useAuth(); // Get categories from AuthContext
 
   const handleEditClick = () => {
     setIsEditing(true);
@@ -26,7 +28,6 @@ function TodoDetail({ todo, onClose, username, handleUpdate }) {
     event.preventDefault(); // 폼 제출 시 기본 동작 방지
     try {
       const response = await updateTodoApi(username, todo.id, editTodo);
-      console.log(response);
       onClose(); // 저장 후 모달 닫기
       handleUpdate({ ...todo, ...editTodo }); // 수정된 정보를 부모에게 전달
     } catch (error) {
@@ -60,23 +61,26 @@ function TodoDetail({ todo, onClose, username, handleUpdate }) {
               제목
               <input type='text' name="title" value={editTodo.title} onChange={handleInputChange} />
             </label>
-            <label>
-              날짜
-              <div>
-              <input type='date' className='me-2' name="startDate" value={editTodo.startDate} onChange={handleInputChange} />
-              ~
-              <input type='date' className='ms-2' name="endDate" value={editTodo.endDate} onChange={handleInputChange} />
-              <button type="button" className="btn-today px-2 ms-2 me-1 mt-1" onClick={setEditToday}>오늘</button>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+                <label className='me-2 mt-2'>날짜</label>
+                <input type='date' className='me-2 ' name="startDate" value={editTodo.startDate} onChange={handleInputChange} />
+                ~
+                <input type='date' className='ms-2' name="endDate" value={editTodo.endDate} onChange={handleInputChange} />
+                <button type="button" className="btn-today px-2 ms-2 me-1 mt-1" onClick={setEditToday}>오늘</button>
+              </div>
+              <div style={{ marginTop: '10px',marginBottom: '10px', display: 'flex', alignItems: 'center', marginRight: '100px' }}>
+                <label className='me-2 mt-2'>카테고리</label>
+                <select className="form-control w-25" name="categoryId" value={editTodo.categoryId} onChange={handleInputChange}>
+                  <option>카테고리 선택</option>
+                  {categories.map(category => (
+                    <option key={category.id} value={category.id} style={{ color: category.color, fontWeight: 'bold' }}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               </div>
               
-            </label>
-            <label>
-              카테고리
-              <select className="form-control mt-2" name="category" value={editTodo.category} onChange={handleInputChange}>
-                <option>카테고리 선택</option>
-                
-              </select>
-            </label>
+            
             <label>
               설명
               <textarea name="description" value={editTodo.description} onChange={handleInputChange} />

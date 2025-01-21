@@ -256,42 +256,23 @@ const Signup = () => {
                 </div>
               </div>
 
-              <div className="form-row">
-                <div className="checkbox-container">
+              <div className="form-row ">
+                <div className="checkbox-container" style={{ display: 'flex', alignItems: 'center' }}>
                   <label className="form-label">알게 된 경로</label>
-                  <div className="checkbox-group">
-                    <label>
-                      <input type="checkbox" name="reference" value="친구 추천" />
-                      친구 추천
-                    </label>
-                    <label>
-                      <input type="checkbox" name="reference" value="인터넷" />
-                      인터넷
-                    </label>
-                    <label>
-                      <input type="checkbox" name="reference" value="광고" />
-                      광고
-                    </label>
-                    <label>
-                      <input type="checkbox" name="reference" value="기타" />
-                      기타 - 내가만듬
-                    </label>
-                  </div>
+                  <input className="mb-3 m-2" type="checkbox" id="reference1" name="reference" value="친구 추천" />
+                  <label htmlFor="reference1">친구 추천</label>
+                  <input className="mb-3 m-2" type="checkbox" id="reference2" name="reference" value="인터넷" />
+                  <label htmlFor="reference2">인터넷</label>
+                  <input className="mb-3 m-2" type="checkbox" id="reference3" name="reference" value="광고" />
+                  <label htmlFor="reference3">광고</label>
+                  <input className="mb-3 m-2" type="checkbox" id="reference4" name="reference" value="기타" />
+                  <label htmlFor="reference4">기타 - 내가만듬</label>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="robot-checkbox">
-          <input
-            type="checkbox"
-            name="isRobot"
-            checked={formData.isRobot}
-            onChange={(e) => setFormData(prev => ({ ...prev, isRobot: e.target.checked }))}
-          />
-          <label>저는 로봇이 아닙니다.</label>
-        </div>
         <div className="container-button">
         <Link to={'/login'} className={'back-button'}>뒤로가기</Link>
         <button type="submit" className="submit-button">

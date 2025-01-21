@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Calendar.css';
 import { retrieveAllTodosForUsernameApi } from '../api/TodoApiService';
+import { useAuth } from '../context/AuthContext';
 
 function getMonthDates(year, month) {
     const date = new Date(year, month, 1);
@@ -17,6 +18,7 @@ function getMonthDates(year, month) {
 }
 
 function Calendar({ username }) {
+    const { categories } = useAuth();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [loading, setLoading] = useState(true);
     const [allTodos, setAllTodos] = useState([]);
@@ -33,31 +35,21 @@ function Calendar({ username }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            retrieveAllTodosForUsernameApi(username)
-                .then(response => {
-                    setAllTodos(response.data);
-                    setLoading(false);
-                })
-                .catch(error => console.error(error));
-        };
+        try{
+            const todosResponse= await retrieveAllTodosForUsernameApi(username)
+            setAllTodos(todosResponse.data);
+        }catch(error){
+            console.error(error);
+        } finally{
+            setLoading(false);
+        }
+    };
+
         fetchData();
     }, [username]);
 
     const monthDates = getMonthDates(currentDate.getFullYear(), currentDate.getMonth());
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
-    const categoryColors = [
-        { id: 1, color: '#FFB3BA' }, // Pastel Red
-        { id: 2, color: '#FFDFBA' }, // Pastel Orange
-        { id: 3, color: '#FFFFBA' }, // Pastel Yellow
-        { id: 4, color: '#BAFFC9' }, // Pastel Green
-        { id: 5, color: '#BAE1FF' }, // Pastel Blue
-        { id: 6, color: '#E2BAFF' }, // Pastel Purple
-        { id: 7, color: '#FFC4E1' }, // Pastel Pink
-        { id: 8, color: '#B3E5FC' }, // Light Blue
-        { id: 9, color: '#C8E6C9' }, // Light Green
-        { id: 10, color: '#FFF9C4' }, // Light Yellow
-        { id: 11, color: '#D1C4E9' }  // Light Purple
-    ];
 
     if (loading) return (<div>로딩중 ...</div>);
 
@@ -94,7 +86,7 @@ function Calendar({ username }) {
                                     eventEndDate.setHours(0, 0, 0, 0); // 시간을 0시 0분 0초로 설정
 
                                     if (date >= eventStartDate && date <= eventEndDate) { 
-                                        const eventColor = categoryColors.find(color => color.id === allTodo.category)?.color || '#FFECB3';
+                                        const eventColor = categories.find(category => category.id === allTodo.categoryId)?.color || '#FFECB3';
                                         return (
                                             <div key={todoIdx} className="event" style={{ backgroundColor: eventColor }}>
                                                 {allTodo.title}
