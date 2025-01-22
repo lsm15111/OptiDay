@@ -1,4 +1,9 @@
 package com.optiday_min.optiday.jwt;
 
-public record JwtTokenRequest(String username, String password) {
+import lombok.Data;
+
+@Data
+public class JwtTokenRequest {
+    private String username;
+    private String password;
 }
