@@ -1,48 +1,51 @@
 package com.optiday_min.optiday.jwt;
 
+import com.optiday_min.optiday.entity.Member;
+import com.optiday_min.optiday.jpa.MemberRepository;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+
 @RestController
+@RequestMapping("/api")
 public class JwtAuthenticationController {
 
-    private final JwtTokenService tokenService;
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
-    private final AuthenticationManager authenticationManager;
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
-    public JwtAuthenticationController(JwtTokenService tokenService,
-                                       AuthenticationManager authenticationManager) {
-        this.tokenService = tokenService;
-        this.authenticationManager = authenticationManager;
-    }
+    @Autowired
+    private UserDetailsService userDetailsService;
 
-    // JWT 생성
-    // username,password 로 Token 생성
-    @PostMapping("/api/authenticate")
-    public ResponseEntity<JwtTokenResponse> generateToken(
-            @RequestBody JwtTokenRequest jwtTokenRequest) {
-
-
-
-        // 2. username,password => token 생성
-        var authenticationToken =
+    @PostMapping("/authenticate")
+    public JwtTokenResponse authenticate(@RequestBody JwtTokenRequest jwtTokenRequest) {
+        // 사용자 인증
+        Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        jwtTokenRequest.username(),
-                        jwtTokenRequest.password());
+                        jwtTokenRequest.getUsername(),
+                        jwtTokenRequest.getPassword()
+                )
+        );
+        // 인증된 사용자 정보 가져오기
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        // JWT 토큰 생성
+        String token = jwtTokenUtil.generateToken(userDetails);
 
-        // 3. token => 로그인 시도
-        var authentication =
-                authenticationManager.authenticate(authenticationToken);
-
-        var token = tokenService.generateToken(authentication);
-
-        return ResponseEntity.ok(new JwtTokenResponse(token));
+        return new JwtTokenResponse(token);
     }
-
-
-
 }
