@@ -6,6 +6,6 @@ export const getFollowingsApi
     = (id) => apiClient.get(`/following/${id}`)
 
 export const followApi 
-    = (id) => apiClient.post(`/follow/${id}`)
+    = (memberId, followId) => apiClient.post(`/follow/${memberId}/${followId}`)
 export const unfollowApi 
-    = (id) => apiClient.delete(`/follow/${id}`)
+    = (memberId, followId) => apiClient.delete(`/unfollow/${memberId}/${followId}`)
