@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { retrieveAllTodosForUsernameApi, updateTodoApi, deleteTodoApi, createTodoApi } from '../api/TodoApiService';
 import { useAuth } from './AuthContext';
+import { retrieveAllCategoriesForUsernameApi } from '../api/CategoryApiService';
 
 export const TodoContext = createContext();
 
 export const useTodo = () => useContext(TodoContext);
 function TodoProvider({ children }){
     const [todos, setTodos] = useState([]);
+    const [categories, setCategories] = useState([])
 
     const {username} = useAuth();
     async function fetchTodos(username){
@@ -72,13 +74,27 @@ function TodoProvider({ children }){
         }
     };
 
+    const fetchCategories = async (username) => {
+        try {
+            const response = await retrieveAllCategoriesForUsernameApi(username);
+            setCategories(response.data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+
+    
+
+
+
     // 마운트될 때 한번
     useEffect(() => {
         fetchTodos(username)
+        fetchCategories(username)
     },[])
 
     return (
-        <TodoContext.Provider value={{ todos, updateTodo, deleteTodo, fetchTodos, createTodo }}>
+        <TodoContext.Provider value={{ todos, updateTodo, deleteTodo, fetchTodos, createTodo,categories, fetchCategories }}>
             {children}
         </TodoContext.Provider>
     );

@@ -4,14 +4,15 @@ import '../../styles/DayTodoModal.css';
 import { useAuth } from '../../context/AuthContext';
 import { Edit, X } from 'lucide-react';
 import DailyTodoModal from './DetailTodoModal';
+import { useTodo } from '../../context/TodoContext';
 
 const DayTodosModal = ({todos, isOpen, onClose }) => {
     
-    const {categories} = useAuth();
     const [editingTodo, setEditingTodo] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [updatedTodos, setUpdatedTodos] = useState(todos);
 
+    const {categories} = useTodo();
     useEffect(() => {
         setUpdatedTodos(todos);
     }, [todos,setIsEditing]);
@@ -47,7 +48,7 @@ const DayTodosModal = ({todos, isOpen, onClose }) => {
             <div className='todo-list-container' style={{ overflowY: updatedTodos.length > 5 ? 'auto' : 'hidden' }}>
                 {updatedTodos.length > 0 ? updatedTodos.map(todo => (
                     <div key={todo.id} onClick={() => handleEditClick(todo)}>
-                    <ul className='todo-DayTodosItem w-100' style={{ backgroundColor: categories.find(category => category.id === todo.categoryId)?.color }}>
+                    <ul className='todo-DayTodosItem w-100' style={{ backgroundColor: Array.isArray(categories) && categories.find(category => category.id === todo.categoryId)?.color }}>
                         <li className='todo-DayTodo-title w-100 d-flex justify-content-between'>{todo.title}
                         <Edit size={20} className="ellipsis-icon me-1" ></Edit>
                         </li>

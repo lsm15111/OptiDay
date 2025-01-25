@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import '../styles/Mypage.css';
 import { retrieveProfileApi, updateProfileApi } from "../api/UserApiService";
 import { useAuth } from "../context/AuthContext";
+import DateSelector from "../components/DateSelector";
 
 function Mypage() {
     const defaultProfileImg = '/images/user_default.png'; // default image URL (정적)
@@ -99,7 +100,7 @@ function Mypage() {
 
         if (fields.includes('birthDate')) {
             const birthDate = userData.birthDate;
-            if (!validateBirthDate(birthDate)) {
+            if (!(birthDate===undefined||birthDate.length===0||birthDate.length===10)) {
                 setErrors(prev => ({ ...prev, birthDate: true }));
                 isValid = false;
             } else {
@@ -109,7 +110,7 @@ function Mypage() {
 
         if (fields.includes('phone')) {
             const numbers = userData.phone.replace(/\D/g, '');
-            if (numbers.length < 10) {
+            if (numbers.length < 11&&numbers.length > 0) {
                 setErrors(prev => ({ ...prev, phone: true }));
                 isValid = false;
             } else {
@@ -119,7 +120,8 @@ function Mypage() {
 
         if (fields.includes('email')) {
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(userData.email)) {
+            console.log(userData.email)
+            if (!emailRegex.test(userData.email)&&!(userData.email==='')) {
                 setErrors(prev => ({ ...prev, email: true }));
                 isValid = false;
             } else {
@@ -131,10 +133,6 @@ function Mypage() {
             console.log('저장된 데이터:', userData);
         }
         return isValid;
-    };
-    const validateBirthDate = (birthDate) => { // 생년월일 입력 검증
-        const [year, month, day] = birthDate.split('-');
-        return year && month && day; // 모든 값이 입력되었는지 확인
     };
 
     const formatPhoneNumber = (value) => { //폰 번호 표준화
@@ -166,54 +164,6 @@ function Mypage() {
         }));
     };
 
-    const generateYears = () => Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
-    const generateMonths = () => Array.from({ length: 12 }, (_, i) => String(i + 1).padStart(2, '0'));
-    const getDaysInMonth = (year, month) => new Date(year, month, 0).getDate();
-
-    const DateSelector = ({ value, onChange }) => {
-        const [year, month, day] = (value || '').split('-');
-        
-        return (
-            <div className="date-selector me-3">
-                <select 
-                    className="form-select year-select"
-                    style={{ width: '120px' }}
-                    value={year || ''}
-                    onChange={(e) => onChange('year', e.target.value)}
-                >
-                    <option value="">년도</option>
-                    {generateYears().map(year => (
-                        <option key={year} value={year}>{year}</option>
-                    ))}
-                </select>
-                <select 
-                    className="form-select month-select"
-                    style={{ width: '90px' }}
-                    value={month || ''}
-                    onChange={(e) => onChange('month', e.target.value)}
-                >
-                    <option value="" >월</option>
-                    {generateMonths().map(month => (
-                        <option key={month} value={month}>{parseInt(month)}월</option>
-                    ))}
-                </select>
-                <select 
-                    className="form-select day-select"
-                    style={{ width: '90px' }}
-                    value={day || ''}
-                    onChange={(e) => onChange('day', e.target.value)}
-                >
-                    <option value="">일</option>
-                    {Array.from(
-                        { length: getDaysInMonth(year, month) || 31 },
-                        (_, i) => String(i + 1).padStart(2, '0')
-                    ).map(day => (
-                        <option key={day} value={day}>{parseInt(day)}일</option>
-                    ))}
-                </select>
-            </div>
-        );
-    };
 
     const handleSave = async () => {
         const isValid = handleFieldSave(['username', 'birthDate', 'phone', 'email']);
@@ -234,7 +184,7 @@ function Mypage() {
 
     return (
         <div className="contents">
-            <div className="container-fluid px-4" style={{ maxWidth: '1000px', margin: '0 auto' }}>
+            <div className="container-fluid" style={{ maxWidth: '1000px', margin: '0 auto' }}>
                 <div className="row justify-content-center">
                     <div className="bg-white p-4">
                         
@@ -313,20 +263,11 @@ function Mypage() {
                                 <p className="mt-2 text-muted">
                                     팔로워 {userData.followers} 팔로잉 {userData.following}
                                 </p>
-                                <div className="profile-info">
-                                        <div className="info-value">
-                                            <button 
-                                                onClick={() => {/* 비밀번호 변경 로직 */}} 
-                                                className="btn btn-sm btn-danger"
-                                            >
-                                                비밀번호 변경
-                                            </button>
-                                        </div>
-                                </div>
+                                
                             </div>
                         </div>
                         {/* 개인 정보 레이어 */}
-                        <section className="mt-4">
+                        <section className="mt-4 p-5">
                             <h3 className="section-title text-start">개인 정보</h3>
                             <div className="section-content">
                                 <div className="settings-item">
@@ -368,7 +309,7 @@ function Mypage() {
                                                     type="tel" 
                                                     value={userData.phone}
                                                     onChange={(e) => updateTempField('phone', formatPhoneNumber(e.target.value))}
-                                                    placeholder="전화번호"
+                                                    placeholder="000-0000-0000"
                                                     className="field-input"
                                                     maxLength={13}
                                                     id="phone-input"
@@ -407,7 +348,7 @@ function Mypage() {
                             </div>
                         </section>
                         {/* 개인 설정 레이어 */}
-                        <section className="mt-5">
+                        {/* <section className="mt-5">
                             <h3 className="section-title text-start">개인 설정</h3>
                             <div className="section-content">
                                 <div className="settings-item">
@@ -417,18 +358,25 @@ function Mypage() {
                                         </div>
                                 </div>
                             </div>
-                        </section>
-                        <div className="mt-5 text-end">
-                            <button className="btn btn-danger">계정 삭제</button>
-                        </div>
+                        </section> */}
+                        {isEditing && (
+                            <div className="mt-5 text-end">
+                                <button onClick={() => {/* 비밀번호 변경 로직 */}} className="btn btn-secondary me-2">
+                                    비밀번호 변경
+                                </button>
+                                <button onClick={() => {/* 계정 삭제 로직 모든 관계수정 */}} className="btn btn-danger">계정 삭제</button>
+                            </div>
+                        )}
+                        
                         <div className="d-flex justify-content-center mt-4">
                             {!isEditing ? (
                                 <button className="btn btn-primary" onClick={() => setIsEditing(true)}>수정</button>
                             ) : (
-                                <>
-                                    <button className="btn btn-success" onClick={handleSave}>저장</button>
-                                    <button className="btn btn-secondary" onClick={() => { setUserData(originalData); setIsEditing(false); }}>취소</button>
-                                </>
+                                <div>
+                                
+                                    <button className="btn btn-success me-2" onClick={handleSave}>저장</button>
+                                    <button className="btn btn-secondary ms-2" onClick={() => { setUserData(originalData); setIsEditing(false); }}>취소</button>
+                                </div>
                             )}
                         </div>
                     </div>

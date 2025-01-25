@@ -243,7 +243,7 @@ const Signup = () => {
                 </div>
               </div>
 
-              <div className="form-row">
+              {/* <div className="form-row">
                 <label className="form-label">보조 이메일</label>
                 <div className="form-input-group">
                   <input
@@ -254,7 +254,7 @@ const Signup = () => {
                   />
                   <span className="input-hint">주 이메일 계정에 문제가 생겼을 경우 필요할 수 있습니다.</span>
                 </div>
-              </div>
+              </div> */}
 
               <div className="form-row ">
                 <div className="checkbox-container" style={{ display: 'flex', alignItems: 'center' }}>

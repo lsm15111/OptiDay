@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { getFollowersApi, getFollowingsApi } from '../api/FollowApiService';
 import '../styles/Follow.css';
 import { useAuth } from '../context/AuthContext';
+import { useFollow } from '../context/FollowContext';
 
 function Follow(){
     const [selectedTab, setSelectedTab] = useState('followers');
-    const { memberId } = useAuth();
-    const [followers, setFollowers] = useState([]);
-    const [followings, setFollowings] = useState([]);
+    const { memberId,isAuthLoaded } = useAuth();
+    const { fetchFollow, followers, followings } = useFollow();
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const fetchData = async () => {
-            const responseFollowers = await getFollowersApi(memberId);
-            const responseFollowings = await getFollowingsApi(memberId);
-            setFollowers(responseFollowers.data);
-            setFollowings(responseFollowings.data);
+            if(!isAuthLoaded) return;
+            await fetchFollow(memberId);
+            setIsLoading(false);
         };
-
-        if(memberId){
-            fetchData();
-        }
+        fetchData();
     }, [memberId]);
 
     const renderContent = () => {
@@ -35,6 +31,7 @@ function Follow(){
         }
     };
 
+    if(isLoading) return(<div>로딩중</div>)
     return (
         <div className='contents'>
             <div className="container-fluid px-4">
@@ -109,7 +106,6 @@ const usePagination = (items, itemsPerPage) => {
 
 // Follow 검색 훅
 const useSearch = (items, searchTerm) => {
-    console.log('search');
     return items.filter(item => 
         item.username.toLowerCase().includes(searchTerm.toLowerCase()) || 
         item.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -120,7 +116,6 @@ const useSearch = (items, searchTerm) => {
 const FollowersComponent = ({ followers, followings }) => {
     const itemsPerPage = 10;
     const [searchTerm, setSearchTerm] = useState('');
-
     const { currentItems, totalPages, currentPage, setCurrentPage } = usePagination(followers, itemsPerPage);
     const filteredFollowers = useSearch(currentItems, searchTerm);
 
@@ -148,7 +143,6 @@ const FollowersComponent = ({ followers, followings }) => {
 const FollowingComponent = ({ followings }) => {
     const itemsPerPage = 10;
     const [searchTerm, setSearchTerm] = useState('');
-
     const { currentItems, totalPages, currentPage, setCurrentPage } = usePagination(followings, itemsPerPage);
     const filteredFollowings = useSearch(currentItems, searchTerm);
 
@@ -171,6 +165,9 @@ const FollowingComponent = ({ followings }) => {
     );
 };
 
-const AccountSearchComponent = () => <div>Account Search</div>;
+const AccountSearchComponent = () => <div>
+    
+    
+</div>;
 
 export default Follow;

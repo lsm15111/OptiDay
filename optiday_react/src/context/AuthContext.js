@@ -1,20 +1,16 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { executeJwtAuthenticationService } from "../api/AuthenticationApiService";
 import { apiClient } from "../api/ApiClient";
-import { retrieveAllCategoriesForUsernameApi } from "../api/CategoryApiService";
 import { retrieveMemberIdApi } from "../api/UserApiService";
 
-//Context 생성
 export const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-// 다른 컴포넌트와 생성된 context 공육
 function AuthProvider({children}){
     const [isAuthenticated, setAuthenticated] = useState(false)
     const [username, setUsername] = useState(null)
     const [token, setToken] = useState(null)
-    const [categories, setCategories] = useState([])
     const [memberId, setMemberId] = useState(null)
     const [isAuthLoaded, setAuthLoaded] = useState(false); // 상태 복원 완료 여부 추가
     // 브라우저에 저장된 데이터 복원
@@ -33,21 +29,10 @@ function AuthProvider({children}){
             return config;
         });
 
-        fetchCategories(storedUsername);
         fetchMemberId(storedUsername);
         }
         setAuthLoaded(true); // 상태 복원이 완료되었음을 설정
     }, []);
-
-
-    const fetchCategories = async (username) => {
-        try {
-            const response = await retrieveAllCategoriesForUsernameApi(username);
-            setCategories(response.data);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
-    };
 
     const fetchMemberId = async (username) => {
         try {
@@ -57,6 +42,7 @@ function AuthProvider({children}){
             console.error('Error fetching member ID:', error);
         }
     };
+    
 
     async function login(username, password){
         try{
@@ -77,7 +63,6 @@ function AuthProvider({children}){
                         return config
                     }
                 )
-                await fetchCategories(username);
                 await fetchMemberId(username);
                 // console.log('로그인 성공');
                 return true
@@ -95,7 +80,6 @@ function AuthProvider({children}){
 
     
     function logout(){
-        setCategories([]);
         setMemberId(null);
         setAuthenticated(false)
         setToken(null)
@@ -107,7 +91,7 @@ function AuthProvider({children}){
     }
 
     return(
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, username, token, categories,memberId,fetchCategories,isAuthLoaded }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, username, token, memberId, isAuthLoaded }}>
             {children}
         </AuthContext.Provider>
     )

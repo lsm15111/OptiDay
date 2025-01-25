@@ -5,24 +5,12 @@ import { Link, useNavigate } from 'react-router-dom';
 function Login(){
     const [username, setUsername] = useState('min');
     const [password, setPassword] = useState('min');
-
     const [showErrorMessage, setShowErrorMessage] = useState(false)
     const navigate = useNavigate()
-    const authContext = useAuth()
-
-    function handleUsernameChange(event){
-        setUsername(event.target.value)
-    }
-    function handlePasswordChange(event){
-        setPassword(event.target.value)
-    }
-
-    // function IdAndPasswordCheck{
-        
-    // }
+    const {login} = useAuth()
 
     async function handleSubmit() {
-        const response = await authContext.login(username, password)
+        const response = await login(username, password)
         if(response){ //로그인 성공 여부
             navigate(`/main/${username}`)
         } else {
@@ -38,12 +26,12 @@ function Login(){
                 <form>
                     <div className="mb-3">
                         <input type="text" className="form-control form-control-lg" 
-                                name='username' value={username} onChange={handleUsernameChange}
+                                name='username' value={username} onChange={(e) => setUsername(e.target.value)}
                         placeholder="ID"/>
                     </div>
                     <div className="mb-3">
                         <input type="password" className="form-control form-control-lg" 
-                                name='password' value={password} onChange={handlePasswordChange}
+                                name='password' value={password} onChange={(e) => setPassword(e.target.value)}
                         placeholder="비밀번호"/>
                     </div>
                 </form>
@@ -51,7 +39,7 @@ function Login(){
                 {/* 로그인 버튼 */}
                 <button className='btn login-button w-100 py-2 mb-3' name='login' onClick={handleSubmit} >로그인</button>
                 <div className="line m-1 w-100 mb-4 bg-secondary"></div>
-                <div className="d-flex justify-content-center gap-4 mb-4">
+                {/* <div className="d-flex justify-content-center gap-4 mb-4">
                     <a href="/" className="icon-button" >
                         <img src="https://placehold.co/24x24" alt="Google icon"/>
                     </a>
@@ -61,7 +49,7 @@ function Login(){
                     <a href="/" className="icon-button">
                         <img src="https://placehold.co/24x24" alt="KakaoTalk icon"/>
                     </a>
-                </div>
+                </div> */}
                 {showErrorMessage && <div className='fw-semibold'>인증 실패</div>}
                 
                 {/* 회원 가입 버튼 */}

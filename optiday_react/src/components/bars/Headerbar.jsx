@@ -11,7 +11,6 @@ function Headerbar(){
     const inputRef = useRef(null);
     const authContext = useAuth();
 
-    const [message,setMessage] = useState(`${authContext.username}`);
 
 
     const handleFocus = () => {
@@ -43,7 +42,7 @@ function Headerbar(){
                         <div className="headerbar-left">
                             <a className="navbar-brand text-black headerbar-brand fs-3" href="/">OptiDay</a>
                             <div className="headerbar-items">
-                                <div className="nav-link headerbar-link fs-5" >{message}</div>
+                                <div className="nav-link headerbar-link fs-5" >안녕하세요</div>
                                 {/* <div className="friend_img"></div>
                                 <div className="friend_img"></div> */}
                             </div>

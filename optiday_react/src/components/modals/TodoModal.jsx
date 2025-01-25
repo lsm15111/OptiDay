@@ -2,18 +2,19 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/TodoModal.css';
-import { createTodoApi } from '../../api/TodoApiService';
 import { useAuth } from '../../context/AuthContext';
+import { useTodo } from '../../context/TodoContext';
+import { Check, X } from 'lucide-react';
 
 const TodoModal = ({ isOpen, onClose }) => {
-    const [isPublic, setIsPublic] = useState(false);
-
-    const {username} = useAuth();
+    // const [isPublic, setIsPublic] = useState(false);
+    const { createTodo, categories  } = useTodo();
+    const { username} = useAuth();
     const [todo, setTodo] = useState({
         title: '',
         startDate: '',
         endDate: '',
-        category: '',
+        categoryId: '',
         description: ''
     })
 
@@ -21,28 +22,16 @@ const TodoModal = ({ isOpen, onClose }) => {
         setTodo({...todo, [e.target.name]: e.target.value})
     }
 
-    const handleFormSubmit = async () => {
-        
-        const response = await createTodoApi(username, {
-            ...todo,
-            category: todo.category === '' ? null : todo.category // 빈 문자열일 경우 null로 설정
-        });
-        
-        if(response.status==200){ // 성공
-            alert('등록 성공')
-            // 데이터 초기화
-        setTodo({
-            title: '',
-            startDate: '',
-            endDate: '',
-            category: '',
-            description: ''
-        });
-
-        // 모달 닫기
-        onClose();
-        }else{ // 실패
-            alert(`서버 응답${response.status}`)
+    const handleFormSubmit = async (event) => {
+        if(todo.categoryId === 'none') todo.categoryId=null;
+        event.preventDefault(); // 폼 제출 시 기본 동작 방지
+        try {
+            const res = await createTodo(username, todo); 
+            if(res){
+                handleExit();
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 
@@ -50,16 +39,42 @@ const TodoModal = ({ isOpen, onClose }) => {
         const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD 형식
         setTodo({ ...todo, startDate: today, endDate: today });
     };
+    const handleExit = () => {
+        setTodo({
+            title: '',
+            startDate: '',
+            endDate: '',
+            categoryId: '',
+            description: ''
+        });
+        setIsMessage(false);
+        onClose(); // 모달 닫기
+    }
+
+    const [isMessage,setIsMessage] = useState(false);
+    const handleError = () => {
+        setIsMessage(true);
+    }
+
 
     return (
-        <Modal isOpen={isOpen} 
-        onRequestClose={onClose} 
+        <Modal 
+        isOpen={isOpen} 
+        onRequestClose={() => {handleExit()}} 
         ariaHideApp={false}
-        className="modal-dialog-centered todo-modal" overlayClassName="modal-overlay">
+        className="modal-dialog-centered todo-modal" 
+        overlayClassName="modal-overlay">
             <div className="modal-content">
                 <div className="d-flex justify-content-between align-items-center mb-1">
-                    <button className="btn btn-dark" onClick={handleFormSubmit} disabled={todo.title.length < 2 || !todo.startDate || !todo.endDate}>등록</button>
-                    <div className="d-flex justify-content-end">
+                    <X size={30} onClick={handleExit} className='btn-x'></X>
+                    {isMessage && <div className='text-danger'>날짜를 입력해주세요</div>}
+                    <Check 
+                        size={30} 
+                        className='btn-edit' 
+                        onClick={todo.title.length < 2 || !todo.startDate || !todo.endDate ? handleError : handleFormSubmit} 
+                    />
+                    {/* <button className="" onClick={handleFormSubmit} disabled={todo.title.length < 2 || !todo.startDate || !todo.endDate}></button> */}
+                    {/* <div className="d-flex justify-content-end">
                         <span className="me-2">{isPublic ? '공개' : '비공개'}</span>
                         <div className="form-check form-switch">
                             <input 
@@ -70,35 +85,42 @@ const TodoModal = ({ isOpen, onClose }) => {
                                 onChange={() => setIsPublic(!isPublic)} 
                             />
                         </div>
-                    </div>
+                    </div> */}
                 </div>
-                
+                <div className='m-1'>
                 <div className="form-group">
                     <label>제목</label>
                     <input type="text" name="title" value={todo.title} onChange={handleInputChange} className="form-control" />
                 </div>
-                <div className="form-group">
-                    <label>날짜</label>
+                <div className="form-group " style={{ display: 'flex', alignItems: 'center' }}>
+                    <label className='mt-1 me-1'>날짜</label>
                     <div className="d-flex align-items-center">
                     <input type="date" name="startDate" value={todo.startDate} onChange={handleInputChange} className="form-control" />
-                    <span className='mx-2 mt-1'>to</span>
+                    <span className='mx-1 mt-1'>~</span>
                     <input type="date" name="endDate" value={todo.endDate} onChange={handleInputChange} className="form-control" />
 
                     </div>
                     <button className="btn-today px-2 ms-1 me-1 mt-1" onClick={setToday}>오늘</button>
                 </div>
+                {/* <div className="d-flex align-items-center form-group">
+                    <input type="time" name="startTime" className='form-control w-25'></input>
+                    <input type="time" name="endTime" className='form-control w-25'></input>
+                </div> */}
                 <div className="form-group">
                     <label>카테고리</label>
-                    <select className="form-control" name="category" value={todo.category} onChange={handleInputChange}>
-                        <option value=''>카테고리 선택</option>
-                        <option value="1">일반</option>
-                        <option value="2">프로젝트</option>
-                        <option value="3">고객</option>
+                    <select className="form-control" name="categoryId" value={todo.categoryId} onChange={handleInputChange}>
+                        <option value='none'>카테고리 선택</option>
+                        {categories&& categories.map(category => (
+                            <option key={category.id} value={category.id} style={{ color: category.color, fontWeight: 'bold' }}>
+                                {category.name}
+                            </option>
+                        ))}
                     </select>
                 </div>
                 <div className="form-group">
-                    <label>내용</label>
+                    <label>메모</label>
                     <textarea rows="4" className="form-control" name="description" value={todo.description} onChange={handleInputChange}></textarea>
+                </div>
                 </div>
             </div>
         </Modal>

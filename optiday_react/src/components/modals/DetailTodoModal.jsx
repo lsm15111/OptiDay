@@ -18,8 +18,7 @@ function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate })
 
   const [isMessage,setIsMessage] = useState(false);
 
-  const { updateTodo,deleteTodo } = useTodo();
-  const { categories } = useAuth(); 
+  const { updateTodo,deleteTodo,categories } = useTodo();
 
   useEffect(() => {
     if (todo) {
@@ -120,11 +119,11 @@ function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate })
                 <label className='me-2 mt-2'>카테고리</label>
                 <select className="form-control w-25" name="categoryId" value={editTodo.categoryId} onChange={handleInputChange}>
                   <option >카테고리 선택</option>
-                  {categories.map(category => (
+                  {Array.isArray(categories) && categories.map(category => (
                     <option key={category.id} value={category.id} style={{ color: category.color, fontWeight: 'bold' }}>
                       {category.name}
                     </option>
-                  ))}
+                  )) }
                 </select>
               </div>
               <div>
