@@ -21,3 +21,48 @@
     box-shadow: 0 0 0 1px #aaa !important;
     -webkit-box-shadow: 0 0 0 1px #aaa !important;
 }
+
+ /* 버튼 커스텀 */
+.btn-x{
+    color: #6c757d;
+    cursor: pointer;
+}
+.btn-edit{
+    color: green;
+    cursor: pointer;
+    margin-right: 1px;
+    margin-top: 1px;
+}
+
+.btn-delete{
+    color: red;
+    cursor: pointer;
+    margin-right: 1px;
+    margin-top: 1px;
+}
+
+.btn-x:hover{
+    color: black;
+}
+
+.btn-edit:hover{
+    color: rgb(0, 77, 0);
+}
+
+
+
+/* 스크롤 바 커스텀 */
+/* 스크롤바의 폭 너비 */
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgb(68, 68, 68); /* 스크롤바 색상 */
+    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(112, 112, 112, 0.1);  /*스크롤바 뒷 배경 색상*/
+    border-radius: 10px; /* 스크롤바 둥근 테두리 */
+}

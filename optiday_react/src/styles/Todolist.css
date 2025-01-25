@@ -7,7 +7,12 @@
 
 .Todoslist{
     align-items:center;
+    max-height: 650px;
+    overflow-y: scroll;
+    padding: 3px;
 }
+
+
 
 .todoitem{
     width: 280px;
@@ -18,11 +23,11 @@
     border-color: gray;
     background-color: rgba(71, 92, 69, 0.1);
     font-size: 16px;
-    transition: transform 0.2s; /* 부드러운 전환 효과 */
+    transition: transform 0.1s; /* 부드러운 전환 효과 */
 }
 
 .todoitem:hover {
-    transform: scale(1.05); /* 5% 확대 */
+    transform: scale(1.02);
 }
 
 .todolist-container {

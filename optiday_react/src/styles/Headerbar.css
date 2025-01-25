@@ -112,6 +112,7 @@
 .search-button {
     position: absolute;
     left: 15px;
+    margin-top:4px;
     background: none;
     border: none;
     cursor: pointer;
