@@ -4,10 +4,10 @@ export const retrieveAllTodosForUsernameApi
     = (username) => apiClient.get(`/members/${username}/todos`)
 
 export const deleteTodoApi
-    = (username, id) => apiClient.delete(`/members/${username}/todo/${id}`)
+    = (username, todoid) => apiClient.delete(`/members/${username}/todo/${todoid}`)
 
 export const retrieveTodoApi
-    = (username, id) => apiClient.get(`/members/${username}/todo/${id}`)
+    = (username, todoid) => apiClient.get(`/members/${username}/todo/${todoid}`)
 
 export const updateTodoApi
     = (username, todoid, todo) => apiClient.put(`/members/${username}/todo/${todoid}`, todo)
