@@ -14,3 +14,6 @@ export const retrieveProfileApi
 
 export const updateProfileApi
     = (username, profile) => apiClient.put(`/members/${username}/profile`, profile)
+
+export const retrieveMemberIdApi
+    = (username) => apiClient.get(`/members/${username}/id`)
