@@ -107,7 +107,7 @@ const Signup = () => {
   async function getUserCreateStatus(user){
     try{
       const response = await createUser(user)
-      return response.status==200
+      return response.status===200
     } catch(error){
       return false
     }
