@@ -1,0 +1,31 @@
+.todo-DayTodo-title {
+    font-size: 18px; /* Title font size */
+    padding-top: 5px;
+    border-top: 1px solid #ddd;
+}
+
+.todo-DayTodo-date {
+    font-size: 14px; /* Date font size */
+    color: gray; /* Date color */
+    padding: 2px 0 3px 0;
+}
+
+.todo-DayTodo-description {
+    font-size: 15px; /* Description font size */
+    border-bottom: 1px solid #ddd;
+}
+
+.todo-DayTodosItem li {
+    list-style-type: none; /* Remove bullet points */
+    padding-left: 10px;
+    background-color: #ffffff;
+}
+
+.todo-list-container {
+    max-height: 500px;
+    margin: 8px;
+}
+.ellipsis-icon{
+    background-color: #ffffff;
+    
+}
