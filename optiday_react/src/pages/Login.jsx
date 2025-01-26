@@ -38,7 +38,6 @@ function Login(){
                 <div className='mb-3 '/>
                 {/* 로그인 버튼 */}
                 <button className='btn login-button w-100 py-2 mb-3' name='login' onClick={handleSubmit} >로그인</button>
-                <div className="line m-1 w-100 mb-4 bg-secondary"></div>
                 {/* <div className="d-flex justify-content-center gap-4 mb-4">
                     <a href="/" className="icon-button" >
                         <img src="https://placehold.co/24x24" alt="Google icon"/>
