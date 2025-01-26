@@ -13,7 +13,16 @@ function Mypage() {
         const fetchUserData = async () => {
             try {
                 const response = await retrieveProfileApi(username);
-                handleResponseSetData(response.data)
+                setUserData({
+                    username: response.data.username,
+                    message: response.data.message,
+                    birthDate: response.data.birthday,
+                    phone: response.data.phone,
+                    email: response.data.email,
+                    followers: response.data.followers,
+                    following: response.data.following,
+                    profileImg: defaultProfileImg,
+                });
             } catch (error) {
                 console.error('Error fetching user data:', error);
             }
@@ -21,30 +30,6 @@ function Mypage() {
 
         fetchUserData();
     }, []);
-
-    function handleResponseSetData(response) {
-        setUserData({
-            username: response.username,
-            message: response.message,
-            birthDate: response.birthday,
-            phone: response.phone,
-            email: response.email,
-            followers: response.followers,
-            following: response.following,
-            profileImg: defaultProfileImg,
-        });
-        setOriginalData({
-            username: response.username,
-            message: response.message,
-            birthDate: response.birthday,
-            phone: response.phone,
-            email: response.email,
-            followers: response.followers,
-            following: response.following,
-            profileImg: defaultProfileImg,
-        });
-    }
-
 
     const [userData, setUserData] = useState({ // 사용자 정보 데이터
         username: '',
@@ -56,19 +41,8 @@ function Mypage() {
         following: 0,
         profileImg: defaultProfileImg,
     });
-    const [originalData, setOriginalData] = useState({ // 사용자 정보 데이터
-        username: '',
-        message: '',
-        birthDate: '',
-        phone: '',
-        email: '',
-        followers: 0,
-        following: 0,
-        profileImg: defaultProfileImg,
-    });
-    
-
-
+    const [isEditing, setIsEditing] = useState(false);
+    const [tempData, setTempData] = useState(null);
     const [errors, setErrors] = useState({ // 각 폼의 규칙 검증
         username: false,
         message: false,
@@ -77,7 +51,39 @@ function Mypage() {
         email: false
     });
 
-    const [isEditing, setIsEditing] = useState(false);
+    function handleEdit() {
+        setTempData({ ...userData });
+        setIsEditing(true);
+    }
+
+    function handleCancel() {
+        setUserData({ ...tempData });
+        setErrors({ username: false, message: false, birthDate: false, phone: false, email: false });
+        setIsEditing(false);
+    }
+
+    async function handleSave() {
+        const isValid = handleFieldSave(['username', 'birthDate', 'phone', 'email']);
+        if (isValid) {
+            const response = await updateProfileApi(username, userData);
+            console.log('Response data:', response);
+            console.log(response.status)
+            if (response.status === 200) {
+                alert('저장 성공');
+            } else if(response.status === 409){
+                return alert(`저장 실패: 닉네임 중복`);
+            } else{
+                return alert(`저장 실패: 서버 응답 ${response.status}`);
+            }
+            console.log('프로필 수정 성공');
+            setIsEditing(false);
+            setTempData(null);
+        }
+    }
+
+    function handleChange(field, value) {
+        setUserData((prev) => ({ ...prev, [field]: value }));
+    }
 
     const updateTempField = (field, value) => {
         setUserData(prev => ({
@@ -120,7 +126,6 @@ function Mypage() {
 
         if (fields.includes('email')) {
             const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            console.log(userData.email)
             if (!emailRegex.test(userData.email)&&!(userData.email==='')) {
                 setErrors(prev => ({ ...prev, email: true }));
                 isValid = false;
@@ -162,24 +167,6 @@ function Mypage() {
             ...prev,
             profileImg: defaultProfileImg
         }));
-    };
-
-
-    const handleSave = async () => {
-        const isValid = handleFieldSave(['username', 'birthDate', 'phone', 'email']);
-        if (isValid) {
-            const response = await updateProfileApi(username, userData);
-            if (response.status === 200) {
-                alert('저장 성공');
-            } else if(response.status === 409){
-                return alert(`저장 실패: 닉네임 중복`);
-            } else{
-                return alert(`저장 실패: 서버 응답 ${response.status}`);
-            }
-            console.log('프로필 수정 성공');
-            setOriginalData(userData);
-            setIsEditing(false);
-        }
     };
 
     return (
@@ -228,7 +215,7 @@ function Mypage() {
                                             <input 
                                                 type="text" 
                                                 value={userData.username}
-                                                onChange={(e) => updateTempField('username', e.target.value)}
+                                                onChange={(e) => handleChange('username', e.target.value)}
                                                 placeholder="이름"
                                                 className="field-input name"
                                                 minLength={2}
@@ -238,7 +225,7 @@ function Mypage() {
                                             {errors.username && <span className="text-danger ms-2 fs-6">이름을 두글자 이상으로 작성해주세요.</span>}
                                         </div>
                                     ) : (
-                                        <div className="d-flex align-items-center">
+                                        <div className="default-item">
                                             <div>{userData.username}</div>
                                         </div>
                                     )}
@@ -248,7 +235,7 @@ function Mypage() {
                                         <input 
                                             type="text" 
                                             value={userData.message}
-                                            onChange={(e) => updateTempField('message', e.target.value)}
+                                            onChange={(e) => handleChange('message', e.target.value)}
                                             placeholder="상태메시지"
                                             className="field-input message"
                                             id="message-input"
@@ -256,9 +243,9 @@ function Mypage() {
                                         />
                                     </div>
                                 ) : (
-                                    <>
+                                    <div className="default-item">
                                         {userData.message}
-                                    </>
+                                    </div>
                                 )}
                                 <p className="mt-2 text-muted">
                                     팔로워 {userData.followers} 팔로잉 {userData.following}
@@ -287,15 +274,15 @@ function Mypage() {
                                                         };
                                                         
                                                         if (newDate.year || newDate.month || newDate.day) {
-                                                            updateTempField('birthDate', `${newDate.year}-${newDate.month}-${newDate.day}`);
+                                                            handleChange('birthDate', `${newDate.year}-${newDate.month}-${newDate.day}`);
                                                         }
                                                     }}
                                                 />
                                             </div>
                                         ) : (
-                                            <>
+                                            <div className="default-item">
                                                 <span className="text-muted">{userData.birthDate}</span>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -308,17 +295,17 @@ function Mypage() {
                                                 <input 
                                                     type="tel" 
                                                     value={userData.phone}
-                                                    onChange={(e) => updateTempField('phone', formatPhoneNumber(e.target.value))}
+                                                    onChange={(e) => handleChange('phone', formatPhoneNumber(e.target.value))}
                                                     placeholder="000-0000-0000"
-                                                    className="field-input"
+                                                    className="field-input phone"
                                                     maxLength={13}
                                                     id="phone-input"
                                                 />
                                             </div>
                                         ) : (
-                                            <>
+                                            <div className="default-item">
                                                 <span className="text-muted">{userData.phone}</span>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -332,16 +319,16 @@ function Mypage() {
                                                 <input 
                                                     type="email" 
                                                     value={userData.email}
-                                                    onChange={(e) => updateTempField('email', e.target.value)}
+                                                    onChange={(e) => handleChange('email', e.target.value)}
                                                     placeholder="example@email.com"
                                                     className="field-input email"
                                                     id="email-input"
                                                 />
                                             </div>
                                         ) : (
-                                            <>
+                                            <div className="default-item">
                                                 <span className="text-muted">{userData.email}</span>
-                                            </>
+                                            </div>
                                         )}
                                     </div>
                                 </div>
@@ -359,6 +346,19 @@ function Mypage() {
                                 </div>
                             </div>
                         </section> */}
+                        
+                        
+                        <div className="d-flex justify-content-center mt-4">
+                            {!isEditing ? (
+                                <button className="btn btn-primary" onClick={handleEdit}>수정</button>
+                            ) : (
+                                <div>
+                                
+                                    <button className="btn btn-success me-2" onClick={handleSave}>저장</button>
+                                    <button className="btn btn-secondary ms-2" onClick={handleCancel}>취소</button>
+                                </div>
+                            )}
+                        </div>
                         {isEditing && (
                             <div className="mt-5 text-end">
                                 <button onClick={() => {/* 비밀번호 변경 로직 */}} className="btn btn-secondary me-2">
@@ -367,18 +367,7 @@ function Mypage() {
                                 <button onClick={() => {/* 계정 삭제 로직 모든 관계수정 */}} className="btn btn-danger">계정 삭제</button>
                             </div>
                         )}
-                        
-                        <div className="d-flex justify-content-center mt-4">
-                            {!isEditing ? (
-                                <button className="btn btn-primary" onClick={() => setIsEditing(true)}>수정</button>
-                            ) : (
-                                <div>
-                                
-                                    <button className="btn btn-success me-2" onClick={handleSave}>저장</button>
-                                    <button className="btn btn-secondary ms-2" onClick={() => { setUserData(originalData); setIsEditing(false); }}>취소</button>
-                                </div>
-                            )}
-                        </div>
+
                     </div>
                 </div>
             </div>
