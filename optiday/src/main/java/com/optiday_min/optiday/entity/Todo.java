@@ -1,12 +1,12 @@
 package com.optiday_min.optiday.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -20,6 +20,7 @@ public class Todo {
     @Column(nullable = false)
     private String title;
     private String description;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm") //저장 형식
     private LocalDate startDate;
     private LocalDate endDate;
     private boolean status;

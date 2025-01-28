@@ -7,6 +7,7 @@ import com.optiday_min.optiday.jpa.TodoRepository;
 import com.optiday_min.optiday.service.MemberService;
 import com.optiday_min.optiday.service.TodoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,14 +44,17 @@ public class TodoController {
 
     // Todo 생성
     @PostMapping("/members/{username}/todo")
-    public void createTodoForUser(@PathVariable String username , @RequestBody Todo todo){
-        todoService.saveTodosByUsername(username,todo);
+    public ResponseEntity<Todo> createTodoForUser(@PathVariable String username , @RequestBody Todo todo){
+        Todo createTodo = todoService.saveTodosByUsername(username,todo);
+        return ResponseEntity.ok(createTodo);
+
     }
 
     // Todo 수정
     @PutMapping("/members/{username}/todo/{todoId}")
-    public void updateTodoForUser(@PathVariable String username,@PathVariable Integer todoId, @RequestBody Todo todo){
-        todoService.getUpdateTodosByOne(username,todoId,todo);
+    public ResponseEntity<Todo> updateTodoForUser(@PathVariable String username, @PathVariable Integer todoId, @RequestBody Todo todo){
+        Todo updateTodo = todoService.getUpdateTodosByOne(username,todoId,todo);
+        return ResponseEntity.ok(updateTodo);
     }
 
     // Todo 삭제

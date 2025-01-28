@@ -32,7 +32,7 @@ public class TodoService {
     }
 
     // Member 의 Todos 수정
-    public void getUpdateTodosByOne(String username,Integer todoId,Todo todo){
+    public Todo getUpdateTodosByOne(String username,Integer todoId,Todo todo){
 
         Todo maintodo = todoRepository.findById(todoId)
                         .orElseThrow(()-> new EntityNotFoundException("Todo not found"));
@@ -52,18 +52,18 @@ public class TodoService {
         if (todo.getCategoryId() != null ) {
             maintodo.setCategoryId(todo.getCategoryId());
         }
-        todoRepository.save(maintodo);
+        return todoRepository.save(maintodo);
     }
 
     
     //Member 의 Todos 생성
-    public void saveTodosByUsername(String username,Todo todo){
+    public Todo saveTodosByUsername(String username,Todo todo){
         // Member가 존재하는지 확인
         Member member = memberRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Member not found"));
         // Todo에 Member 설정
         todo.setMember(member);
-        todoRepository.save(todo);
+        return todoRepository.save(todo);
     }
     
     //Member 의 모든 Todos 조회
