@@ -1,7 +1,9 @@
 package com.optiday_min.optiday.jwt;
 
+import com.optiday_min.optiday.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -12,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @Table(name = "users") // DB의 테이블 이름
 public class User implements UserDetails {
 
@@ -20,7 +23,7 @@ public class User implements UserDetails {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username; // 사용자명
+    private String username; // 이메일
 
     @Column(nullable = false)
     private String password; // 비밀번호
@@ -32,6 +35,11 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new HashSet<>(); // 사용자 권한
+
+    @OneToOne
+    @JoinColumn(name = "member_id")
+    private Member member;
+
 
     @Override
     public Collection<Role> getAuthorities() {
