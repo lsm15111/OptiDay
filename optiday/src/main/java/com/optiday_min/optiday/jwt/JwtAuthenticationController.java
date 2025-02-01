@@ -1,7 +1,9 @@
 package com.optiday_min.optiday.jwt;
 
 import com.optiday_min.optiday.exception.NotAvailableRequestException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -11,27 +13,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.stream.Collectors;
-
 @RestController
 @RequestMapping("/api")
+@RequiredArgsConstructor
 public class JwtAuthenticationController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationController.class);
+    private final AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @PostMapping("/authenticate")
     public JwtTokenResponse authenticate(@RequestBody JwtTokenRequest jwtTokenRequest) {
 
         if(jwtTokenRequest == null) {
+            logger.warn("JWT Token Request Is NULL");
             throw new NotAvailableRequestException();
         }
 
@@ -49,9 +45,9 @@ public class JwtAuthenticationController {
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-//        userDetails.getAuthorities().iterator().next().getAuthority();
         // JWT 토큰 생성
         String token = jwtTokenUtil.generateToken(userDetails);
+        logger.info("JWT Token Generated Successfully");
 
         return new JwtTokenResponse(token);
     }
