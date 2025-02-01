@@ -4,7 +4,6 @@ import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ public class JwtTokenUtil {
         claims.put("email", userDetails.getUsername());
         String role = userDetails.getAuthorities().toString();
         claims.put("role", role);
-
         return createToken(claims);
     }
 
@@ -41,7 +39,7 @@ public class JwtTokenUtil {
 
     // 토큰 유효성 검사
     public boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getEmailFromToken(token);
+        String username = getEmailFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
@@ -61,6 +59,7 @@ public class JwtTokenUtil {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             return authorization.substring(7);
         }
+        logger.warn("Invalid JWT");
         return null;
     }
 
@@ -71,9 +70,7 @@ public class JwtTokenUtil {
     }
 
     public Long getMemberId(String token) {
-        System.out.println("getMeberId : " + token);
         Claims claims = extractAllClaims(token);
-        System.out.println("getMemberId return: " + claims.get("memberId", Long.class));
         return claims.get("memberId", Long.class); // "MemberId" 필드 값 반환
     }
 
