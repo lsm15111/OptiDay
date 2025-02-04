@@ -1,5 +1,6 @@
 package com.optiday_min.optiday.jwt;
 
+import com.optiday_min.optiday.exception.InvalidTokenException;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,13 @@ public class JwtTokenUtil {
 
     // 토큰 유효성 검사
     public boolean validateToken(String token, UserDetails userDetails) {
-        String username = getEmailFromToken(token);
-        return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        try {
+            String username = getEmailFromToken(token);
+            return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+        } catch (Exception e) {
+        logger.error("Token validation failed: " + e.getMessage());
+        throw new InvalidTokenException("Invalid token");
+    }
     }
 
     private boolean isTokenExpired(String token) {
@@ -59,7 +65,6 @@ public class JwtTokenUtil {
         if (authorization != null && authorization.startsWith("Bearer ")) {
             return authorization.substring(7);
         }
-        logger.warn("Invalid JWT");
         return null;
     }
 
