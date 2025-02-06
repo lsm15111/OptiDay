@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.Dto;
+package com.optiday_min.optiday.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,13 +7,13 @@ import java.time.LocalDate;
 
 @Setter
 @Getter
-public class ProfileUpdateRequest {
+public class ProfileUpdate {
     private String username;
     private String message;
     private String email;
     private Integer followers;
     private Integer following;
-    private LocalDate birthday;
+    private LocalDate birthdate;
     private String phone;
     private String profileImg;
 }
