@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.Dto;
+package com.optiday_min.optiday.dto;
 
 import lombok.*;
 
@@ -13,6 +13,6 @@ public class ProfileDto {
     private String email;
     private Integer followers;
     private Integer following;
-    private LocalDate birthday;
+    private LocalDate birthdate;
     private String phone;
 }

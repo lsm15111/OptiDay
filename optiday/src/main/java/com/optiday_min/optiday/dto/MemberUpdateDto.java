@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.Dto;
+package com.optiday_min.optiday.dto;
 
 import lombok.*;
 
@@ -16,6 +16,5 @@ public class MemberUpdateDto {
     private LocalDate birthdate;
     private String email;
     private String phone;
-
 
 }

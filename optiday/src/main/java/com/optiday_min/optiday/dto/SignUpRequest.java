@@ -5,14 +5,13 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
 @Getter
 @Setter
 @Builder
-public class SignUpRequestDto {
+public class SignUpRequest {
     @NotBlank(message = "이름은 필수 입력 항목입니다.")
     @Size(min = 2, max = 10, message="이름은 2~10자 사이여야 합니다.")
     private String username;

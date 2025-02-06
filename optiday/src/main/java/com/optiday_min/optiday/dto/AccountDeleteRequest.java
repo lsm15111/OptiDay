@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class MemberDeleteRequest {
+public class AccountDeleteRequest {
     private String email;
     private String password;
 }
