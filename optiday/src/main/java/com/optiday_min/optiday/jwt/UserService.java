@@ -1,18 +1,18 @@
 package com.optiday_min.optiday.jwt;
 
+import com.optiday_min.optiday.dto.AccountDeleteRequest;
 import com.optiday_min.optiday.entity.Member;
 import com.optiday_min.optiday.exception.NotAvailableRequestException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,7 +26,7 @@ public class UserService {
     private final JwtTokenUtil jwtTokenUtil;
 
 
-    // 회원 권한 등록
+    // 유저 권한 등록
     public User registerUser(String email, String password,Member member) {
 
         if(userRepository.existsByEmail(email)){
@@ -41,22 +41,50 @@ public class UserService {
 
         // 기본 권한 추가 (예: ROLE_USER)
         Role userRole = roleRepository.findByName("ROLE_USER")
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Role not found"));
         user.setRoles(Collections.singleton(userRole));
 
         logger.info("Registering user " + user.getEmail());
         return userRepository.save(user);
     }
 
+    // 유저 삭제
+    public void deleteUser(Long memberId, AccountDeleteRequest deleteRequest) {
+        String email = deleteRequest.getEmail();
+        String rawPassword = deleteRequest.getPassword();
+        // 1. 이메일로 회원 조회
+        User user = getUserByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+
+        // 2. jwt -> memberId, User -> memberId 와 비교
+        if (!Objects.equals(memberId, user.getMember().getId())) {
+            throw new IllegalArgumentException("잘못된 사용자 요청: memberId가 일치하지 않습니다.");
+        }
+        // 3. 회원의 비밀번호와 Request 비밀번호 비교
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+        userRepository.delete(user);
+        logger.info("Deleting user " + user.getEmail());
+    }
+
+    public void changePassword(String email, String password, String newPassword) {
+
+    }
+
+    private Optional<User> getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
     public String getEmailByMemberId(Long memberId) {
         User user = userRepository.findByMemberId(memberId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         return user.getEmail();
     }
 
     public boolean authenticateUser(JwtTokenRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
         // 복호화 == 암호화 비교
         if(passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             logger.info("Authenticated user " + user.getEmail());
