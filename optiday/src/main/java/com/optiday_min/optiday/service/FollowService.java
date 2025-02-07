@@ -1,16 +1,18 @@
 package com.optiday_min.optiday.service;
 
-import com.optiday_min.optiday.Dto.FollowDto;
-import com.optiday_min.optiday.entity.Follow;
-import com.optiday_min.optiday.entity.Member;
-import com.optiday_min.optiday.jpa.FollowRepository;
-import com.optiday_min.optiday.jpa.MemberRepository;
+import com.optiday_min.optiday.dto.DtoMapper;
+import com.optiday_min.optiday.dto.FollowResponse;
+import com.optiday_min.optiday.dto.FollowStatus;
+import com.optiday_min.optiday.domain.Follow;
+import com.optiday_min.optiday.domain.Member;
+import com.optiday_min.optiday.repository.FollowRepository;
+import com.optiday_min.optiday.jwt.UserService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,7 +20,9 @@ import java.util.stream.Collectors;
 public class FollowService {
 
     private final FollowRepository followRepository;
-    private final MemberRepository memberRepository;
+    private final MemberService memberService;
+    private final UserService userService;
+    private final static Logger logger = LoggerFactory.getLogger(FollowService.class);
 
     //TODO : 관리자 설정
     //모든 팔로우 조회
@@ -26,61 +30,68 @@ public class FollowService {
         return new ArrayList<>(followRepository.findAll());
     }
 
-    //팔로우 저장
-    public void follow(Integer followerId, Integer followingId) {
-        Member follower = memberRepository.findById(followerId)
-                .orElseThrow(()-> new IllegalArgumentException("팔로우 요청자가 존재하지 않습니다."));
-        Member following = memberRepository.findById(followingId)
-                .orElseThrow(()-> new IllegalArgumentException("팔로우 대상이 존재하지 않습니다."));
+    // 팔로우
+    public void follow(Long memberId, Long targetId) {
+        Member follower = memberService.getMemberIdForMember(memberId,"팔로우 요청자가 존재하지 않습니다.");
+        Member following = memberService.getMemberIdForMember(targetId,"팔로우 대상이 존재하지 않습니다.");
         //이미 팔로우 하고 있는지 확인
         if(followRepository.existsByFollowerAndFollowing(follower, following)) {
             throw new IllegalArgumentException("이미 팔로우한 사용자입니다.");
         }
-        // Follow 저장
-        Follow follow = new Follow();
-        follow.setFollower(follower);
-        follow.setFollowing(following);
-        
+        Follow follow = Follow.create(follower,following);
         followRepository.save(follow);
     }
-    
-    //언팔로우
-    public void unfollow(Integer followerId, Integer followingId) {
-        Member follower = memberRepository.findById(followerId)
-                .orElseThrow(() -> new IllegalArgumentException("언팔로우 요청자가 존재하지 않습니다."));
-        Member following = memberRepository.findById(followingId)
-                .orElseThrow(() -> new IllegalArgumentException("언팔로우 대상이 존재하지 않습니다."));
-        // Follow 삭제
-        followRepository.deleteByFollowerAndFollowing(follower, following);
+
+    // 언팔로우
+    public void unfollow(Long memberId, Long targetId) {
+        Follow follow = followRepository.findByFollowerIdAndFollowingId(memberId,targetId)
+                .orElseThrow(()-> new IllegalArgumentException("팔로우 관계가 존재하지 않습니다."));
+        followRepository.delete(follow);
     }
 
-    // 팔로워 목록 조회
-    public List<FollowDto> getFollowers(Integer memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        return followRepository.findAllByFollowing(member)
-                .stream()
-                .map(follow->{
-                    Optional<Member> follower = memberRepository.findById(follow.getFollower().getId());
-                    return new FollowDto(follower.get().getId(),follower.get().getUsername(),follower.get().getEmail());
-                }) // Follower의 ID만 추출
+    // 팔로우 목록 조회
+    public List<FollowResponse> getFollowRelations(Long memberId) {
+        // 해당 member 팔로워 또는 팔로잉한 사람들의 목록을 한 번에 조회
+        List<Follow> followRelations = followRepository.findFollowingsAndFollowersWithFetch(memberId);
+
+        Set<Long> followingIds = getFollowingIds(followRelations, memberId);
+        Set<Long> followerIds = getFollowerIds(followRelations, memberId);
+
+
+        return followRelations.stream()
+                .map(follow -> DtoMapper.toFollowResponse(follow, memberId, followingIds, followerIds))
+                .distinct()
                 .collect(Collectors.toList());
-
     }
-    // 팔로잉 목록 조회
-    public List<FollowDto> getFollowings(Integer memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-        return followRepository.findAllByFollower(member)
-                .stream()
-                .map(follow -> {
-                    Optional<Member> following = memberRepository.findById(follow.getFollowing().getId());
-                    return new FollowDto(following.get().getId(),following.get().getUsername(),following.get().getEmail());
+    private Set<Long> getFollowingIds(List<Follow> followRelations, Long memberId) {
+        return followRelations.stream()
+                .filter(f -> f.getFollower().getId().equals(memberId))
+                .map(f -> f.getFollowing().getId())
+                .collect(Collectors.toSet());
+    }
 
-                })
-                .collect(Collectors.toList());
+    private Set<Long> getFollowerIds(List<Follow> followRelations, Long memberId) {
+        return followRelations.stream()
+                .filter(f -> f.getFollowing().getId().equals(memberId))
+                .map(f -> f.getFollower().getId())
+                .collect(Collectors.toSet());
+    }
+
+    private FollowStatus getFollowStatus(Long otherMemberId, Set<Long> followingIds, Set<Long> followerIds) {
+        boolean isFollowing = followingIds.contains(otherMemberId);
+        boolean isFollowedBy = followerIds.contains(otherMemberId);
+
+        if (isFollowing && isFollowedBy) {
+            return FollowStatus.MUTUAL; // 맞팔
+        } else if (isFollowedBy) {
+            return FollowStatus.FOLLOWER; // 나를 팔로우한 상태
+        } else if (isFollowing) {
+            return FollowStatus.FOLLOWING; // 내가 팔로우한 상태
+        } else {
+            return FollowStatus.NONE; // 서로 팔로우하지 않음 (follow 목록에서는 사용안됨)
+        }
     }
 
 }
