@@ -2,19 +2,29 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Login.css';
 import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { fetchCategories } from '../redux/slices/categorySlice';
+import { fetchMessage } from '../redux/slices/messageSlice';
+import { fetchTodos } from '../redux/slices/todoSlice';
+
 function Login(){
     const [username, setUsername] = useState('min');
     const [password, setPassword] = useState('min');
-    const [showErrorMessage, setShowErrorMessage] = useState(false)
+    const [Error, setError] = useState(false)
     const navigate = useNavigate()
     const {login} = useAuth()
+    const dispatch = useDispatch();
 
-    async function handleSubmit() {
+    async function handleSubmit(event) {
+        event.preventDefault(); // 폼 제출 시 기본 동작 방지
         const response = await login(username, password)
         if(response){ //로그인 성공 여부
-            navigate(`/main/${username}`)
+            dispatch(fetchCategories());
+            dispatch(fetchMessage());
+            dispatch(fetchTodos());
+            navigate(`/main`)
         } else {
-            setShowErrorMessage(true)
+            setError(true)
         }
     }
 
@@ -49,7 +59,7 @@ function Login(){
                         <img src="https://placehold.co/24x24" alt="KakaoTalk icon"/>
                     </a>
                 </div> */}
-                {showErrorMessage && <div className='fw-semibold'>인증 실패</div>}
+                {Error && <div className='fw-semibold'>인증 실패</div>}
                 
                 {/* 회원 가입 버튼 */}
                 <Link to={"/signup"} className="btn signup-button w-100 ">회원가입</Link>
