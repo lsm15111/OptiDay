@@ -1,69 +1,70 @@
 package com.optiday_min.optiday.controller;
 
-import com.optiday_min.optiday.entity.Member;
-import com.optiday_min.optiday.entity.Todo;
-import com.optiday_min.optiday.jpa.MemberRepository;
-import com.optiday_min.optiday.jpa.TodoRepository;
-import com.optiday_min.optiday.service.MemberService;
+import com.optiday_min.optiday.dto.TodoRequest;
+import com.optiday_min.optiday.dto.TodoResponse;
+import com.optiday_min.optiday.domain.Todo;
+import com.optiday_min.optiday.jwt.UserService;
 import com.optiday_min.optiday.service.TodoService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/todos")
 public class TodoController {
 
-    //TODO: Repository 로직들 Service 에서 처리
-    private final TodoRepository todoRepository;
     private final TodoService todoService;
-
-    // TODO: 관리자 전용 설정하기
-    @GetMapping("/todos")
-    public List<Todo> retrieveAllTodo(){
-        return todoService.getAllTodos();
-    }
-
+    private final UserService userService;
 
     // Member 모든 Todos 조회
-    @GetMapping("/members/{username}/todos")
-    public List<Todo> retrieveTodoForUsername(@PathVariable String username){
-        return todoService.getTodosByUsername(username);
+    @GetMapping("/me")
+    public List<TodoResponse> retrieveTodosForMe(@RequestHeader("Authorization") String token){
+        Long memberId = userService.getMemberIdForToken(token);
+        return todoService.getTodosByMemberId(memberId);
+    }
+
+    // Task 생성
+    @PostMapping("")
+    public ResponseEntity<TodoResponse> createTodo(@RequestHeader("Authorization") String token
+                                            ,@Valid @RequestBody TodoRequest todoRequest){
+        Long memberId = userService.getMemberIdForToken(token);
+        TodoResponse todoResponse = todoService.saveTodo(memberId, todoRequest);
+        return ResponseEntity.ok(todoResponse);
+    }
+
+    // Task 수정
+    @PutMapping("/{todoId}")
+    public ResponseEntity<?> updateTodoForUser(@RequestHeader("Authorization") String token
+                                                ,@PathVariable Long todoId
+                                                ,@Valid @RequestBody TodoRequest todoRequest){
+        userService.getMemberIdForToken(token);
+        Todo todo = todoService.updateTodo(todoId,todoRequest);
+        return ResponseEntity.ok(todo);
+    }
+
+    // Task 삭제
+    @DeleteMapping("/{todoId}")
+    public void deleteTodoForMember(@RequestHeader("Authorization") String token,
+                                    @PathVariable Long todoId){
+        userService.getMemberIdForToken(token);
+        todoService.deleteTodo(todoId);
     }
 
 
-    // Member 하루 Todos 조회
-    @GetMapping("/members/{username}/daily")
-    public Optional<List<Todo>> retrieveDailyTodosForUsername(@PathVariable String username){
-        return todoService.getTodayTodosByUsername(username);
-    }
-
-    // Todo 생성
-    @PostMapping("/members/{username}/todo")
-    public ResponseEntity<Todo> createTodoForUser(@PathVariable String username , @RequestBody Todo todo){
-        Todo createTodo = todoService.saveTodosByUsername(username,todo);
-        return ResponseEntity.ok(createTodo);
-
-    }
-
-    // Todo 수정
-    @PutMapping("/members/{username}/todo/{todoId}")
-    public ResponseEntity<Todo> updateTodoForUser(@PathVariable String username, @PathVariable Integer todoId, @RequestBody Todo todo){
-        Todo updateTodo = todoService.getUpdateTodosByOne(username,todoId,todo);
-        return ResponseEntity.ok(updateTodo);
-    }
-
-    // Todo 삭제
-    @DeleteMapping("/members/{username}/todo/{todoId}")
-    public void deleteTodoForUser(@PathVariable String username,@PathVariable Integer todoId){
-        // uid에 맞는 user의 todos에서 tid에 맞는 Todos 를 찾아 삭제 구현하기
-        todoService.deleteTodoById(todoId);
-    }
-
+//    //TODO: 관리자 전용 설정하기
+//    @GetMapping("/todos")
+//    public List<Todo> retrieveAllTodo(){
+//        return todoService.getAllTodos();
+//    }
+//    // Member 하루 Task 조회
+//    @GetMapping("/daily")
+//    public Optional<List<Todo>> retrieveDailyTodosForUsername(@PathVariable String username){
+//        return todoService.getTodayTodosByEmail(username);
+//    }
     
 
 }
