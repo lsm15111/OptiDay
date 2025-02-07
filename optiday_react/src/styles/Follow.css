@@ -23,7 +23,7 @@
     margin: 0 auto;
 }
 
-.follower-item {
+.follow-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -32,7 +32,7 @@
     padding: 5px;
     border-radius: 5px;
 }
-.follower-item:hover {
+.follow-item:hover {
     background-color: #e0e0e0;
     cursor: pointer;
 }
@@ -54,4 +54,25 @@
     margin-right: 5px;
     margin-left: 10px;
     border-radius: 5px;
+}
+
+.follow-button:hover {
+    transition: background-color 0.3s ease;
+    background-color: #a83d3d; /* hover 시 배경색 변경 */
+    
+}
+.account-search-pagination-button{
+    padding: 5px;
+    border-radius: 50%;
+    margin: 5px;
+}
+.account-search-pagination-button:hover{
+    background-color: #e0e0e0;
+}
+.account-search-input{
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
 }

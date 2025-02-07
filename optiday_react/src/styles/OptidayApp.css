@@ -58,7 +58,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgb(68, 68, 68); /* 스크롤바 색상 */
+    background: rgb(182, 182, 182); /* 스크롤바 색상 */
     border-radius: 10px; /* 스크롤바 둥근 테두리 */
 }
 
