@@ -1,7 +1,6 @@
-package com.optiday_min.optiday.entity;
+package com.optiday_min.optiday.domain;
 
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

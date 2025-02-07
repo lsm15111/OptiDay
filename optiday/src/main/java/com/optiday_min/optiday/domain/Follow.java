@@ -1,7 +1,6 @@
-package com.optiday_min.optiday.entity;
+package com.optiday_min.optiday.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,4 +43,14 @@ public class Follow {
     }
 
 
+    public Follow(Member follower, Member following) {
+        this.follower = follower;
+        this.following = following;
+    }
+    public static Follow create(Member follower, Member following) {
+        if (follower.equals(following)) {
+            throw new IllegalArgumentException("자기 자신을 팔로우할 수 없습니다.");
+        }
+        return new Follow(follower, following);
+    }
 }

@@ -1,9 +1,7 @@
-package com.optiday_min.optiday.entity;
+package com.optiday_min.optiday.domain;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.optiday_min.optiday.jwt.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;

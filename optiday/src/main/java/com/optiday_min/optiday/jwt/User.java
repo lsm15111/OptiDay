@@ -1,6 +1,6 @@
 package com.optiday_min.optiday.jwt;
 
-import com.optiday_min.optiday.entity.Member;
+import com.optiday_min.optiday.domain.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,7 +21,7 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username; // 이메일
+    private String email; // 이메일
 
     @Column(nullable = false)
     private String password; // 비밀번호
