@@ -1,100 +1,112 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import { executeJwtAuthenticationService } from "../api/AuthenticationApiService";
 import { apiClient } from "../api/ApiClient";
-import { retrieveMemberIdApi } from "../api/UserApiService";
+import { jwtDecode } from "jwt-decode";
 
 export const AuthContext = createContext();
 
 export const useAuth = () => useContext(AuthContext);
 
-function AuthProvider({children}){
-    const [isAuthenticated, setAuthenticated] = useState(false)
-    const [username, setUsername] = useState(null)
-    const [token, setToken] = useState(null)
-    const [memberId, setMemberId] = useState(null)
+function AuthProvider({ children }) {
+    const [isAuthenticated, setAuthenticated] = useState(false);
     const [isAuthLoaded, setAuthLoaded] = useState(false); // 상태 복원 완료 여부 추가
+    const interceptorRef = useRef(null); // useRef로 인터셉터 관리
+
+    // 토큰 만료 여부 확인 함수
+    function isTokenExpired(token) {
+        try {
+            const { exp } = jwtDecode(token);
+            const currentTime = Math.floor(Date.now() / 1000);
+            return exp < currentTime; // 만료 시간이 현재 시간보다 이전이면 만료
+        } catch (error) {
+            console.error("Error decoding token:", error);
+            return true; // 디코딩 실패 시 만료된 것으로 간주
+        }
+    }
+
     // 브라우저에 저장된 데이터 복원
     useEffect(() => {
-        console.log("AuthContext useEffect")
         const storedToken = localStorage.getItem("token");
-        const storedUsername = localStorage.getItem("username");
+        if (storedToken && !isTokenExpired(storedToken)) {
+            setAuthenticated(true);
+            setAuthLoaded(true);
 
-        if (storedToken && storedUsername) {
-        setToken(storedToken);
-        setUsername(storedUsername);
-        setAuthenticated(true);
+            // 기존 인터셉터 제거
+            if (interceptorRef.current !== null) {
+                apiClient.interceptors.request.eject(interceptorRef.current);
+            }
 
-        apiClient.interceptors.request.use((config) => {
-            config.headers.Authorization = storedToken;
-            return config;
-        });
-
-        fetchMemberId(storedUsername);
+            // 새로운 인터셉터 등록
+            interceptorRef.current = apiClient.interceptors.request.use((config) => {
+                console.log('Intercepting and adding a token');
+                config.headers.Authorization = storedToken;
+                return config;
+            });
+        } else {
+            logout();
         }
-        setAuthLoaded(true); // 상태 복원이 완료되었음을 설정
+
+        // 컴포넌트 언마운트 시 인터셉터 제거
+        return () => {
+            if (interceptorRef.current !== null) {
+                apiClient.interceptors.request.eject(interceptorRef.current);
+            }
+        };
     }, []);
 
-    const fetchMemberId = async (username) => {
+    async function login(email, password) {
         try {
-            const response = await retrieveMemberIdApi(username);
-            setMemberId(response.data);
-        } catch (error) {
-            console.error('Error fetching member ID:', error);
-        }
-    };
-    
+            const responseToken = await executeJwtAuthenticationService(email, password);
+            if (responseToken.status === 200) {
+                const jwtToken = 'Bearer ' + responseToken.data.token;
+                setAuthenticated(true);
 
-    async function login(username, password){
-        try{
-            const responseToken = await executeJwtAuthenticationService(username, password)
-            if(responseToken.status === 200){
-                const jwtToken = 'Bearer '+responseToken.data.token
-                setAuthenticated(true)
-                setUsername(username)
-                setToken(jwtToken)
+                // 기존 인터셉터 제거
+                if (interceptorRef.current !== null) {
+                    apiClient.interceptors.request.eject(interceptorRef.current);
+                }
 
-                // 토큰과 사용자 정보 저장
+                // 새로운 인터셉터 등록
+                interceptorRef.current = apiClient.interceptors.request.use((config) => {
+                    console.log('Intercepting and adding a token');
+                    config.headers.Authorization = jwtToken;
+                    return config;
+                });
+
+                // 토큰 저장
                 localStorage.setItem("token", jwtToken);
-                localStorage.setItem("username", username);
-                apiClient.interceptors.request.use(
-                    (config) =>{
-                        console.log('intercepting and adding a token')
-                        config.headers.Authorization = jwtToken
-                        return config
-                    }
-                )
-                await fetchMemberId(username);
-                // console.log('로그인 성공');
-                return true
-            }else{
-                logout()
-                // console.log('로그인 실패');
-                return false
+                setAuthLoaded(true);
+                return true;
+            } else {
+                logout();
+                return false;
             }
-        } catch(error){
-            // console.error('로그인 에러:', error);
-            logout()
-            return false
+        } catch (error) {
+            console.error('Login error:', error);
+            logout();
+            return false;
         }
     }
 
-    
-    function logout(){
-        setMemberId(null);
-        setAuthenticated(false)
-        setToken(null)
-        setUsername(null)
+    function logout() {
+        setAuthenticated(false);
+        setAuthLoaded(false);
 
-        //로컬 스토리지에서 데이터 삭제
+        // 로컬 스토리지에서 토큰 삭제
         localStorage.removeItem("token");
-        localStorage.removeItem("username");
+
+        // 인터셉터 제거
+        if (interceptorRef.current !== null) {
+            apiClient.interceptors.request.eject(interceptorRef.current);
+            interceptorRef.current = null; // 인터셉터 변수 초기화
+        }
     }
 
-    return(
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, username, token, memberId, isAuthLoaded }}>
+    return (
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, isAuthLoaded }}>
             {children}
         </AuthContext.Provider>
-    )
+    );
 }
 
 export default AuthProvider;
