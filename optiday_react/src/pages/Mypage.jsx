@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import '../styles/Mypage.css';
-import { retrieveProfileApi, updateProfileApi } from "../api/UserApiService";
-import { useAuth } from "../context/AuthContext";
+import { retrieveProfileApi, updateProfileApi } from "../api/MemberApiService";
 import DateSelector from "../components/DateSelector";
+import { useDispatch } from "react-redux";
+import { setMessage } from "../redux/slices/messageSlice";
 
 function Mypage() {
     const defaultProfileImg = '/images/user_default.png'; // default image URL (정적)
-    const AuthContext = useAuth();
-    const username = AuthContext.username;
 
+    const dispatch = useDispatch();
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                const response = await retrieveProfileApi(username);
+                const response = await retrieveProfileApi();
                 setUserData({
                     username: response.data.username,
                     message: response.data.message,
@@ -48,7 +48,6 @@ function Mypage() {
         message: false,
         birthDate: false,
         phone: false,
-        email: false
     });
 
     function handleEdit() {
@@ -58,24 +57,25 @@ function Mypage() {
 
     function handleCancel() {
         setUserData({ ...tempData });
-        setErrors({ username: false, message: false, birthDate: false, phone: false, email: false });
+        setErrors({ username: false, message: false, birthDate: false, phone: false });
         setIsEditing(false);
     }
 
     async function handleSave() {
-        const isValid = handleFieldSave(['username', 'birthDate', 'phone', 'email']);
+        const isValid = handleFieldSave(['username', 'birthDate', 'phone']);
         if (isValid) {
-            const response = await updateProfileApi(username, userData);
-            console.log('Response data:', response);
-            console.log(response.status)
+            const response = await updateProfileApi(userData);
+            // console.log('Response data:', response);
+            // console.log(response.status)
             if (response.status === 200) {
-                alert('저장 성공');
-            } else if(response.status === 409){
-                return alert(`저장 실패: 닉네임 중복`);
+                
+                dispatch(setMessage(userData.message));
+                alert('프로필 수정 완료');
+            } else if(response.status === 400){
+                return alert(`수정 실패: 닉네임 중복`);
             } else{
                 return alert(`저장 실패: 서버 응답 ${response.status}`);
             }
-            console.log('프로필 수정 성공');
             setIsEditing(false);
             setTempData(null);
         }
@@ -124,16 +124,6 @@ function Mypage() {
             }
         }
 
-        if (fields.includes('email')) {
-            const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-            if (!emailRegex.test(userData.email)&&!(userData.email==='')) {
-                setErrors(prev => ({ ...prev, email: true }));
-                isValid = false;
-            } else {
-                setErrors(prev => ({ ...prev, email: false }));
-            }
-        }
-
         if (isValid) {
             console.log('저장된 데이터:', userData);
         }
@@ -178,7 +168,7 @@ function Mypage() {
                         {/* 상단레이어 */}
                         <div className="profile-section p-3 m-auto row">
                             <div className=" col-md-3 m-auto"> 
-                                <div className="profile-image-container">
+                                <div>
                                     {userData.profileImg ? (
                                         <img 
                                             src={userData.profileImg} 
@@ -204,7 +194,7 @@ function Mypage() {
                                     />
                                     <button 
                                         onClick={setToDefaultImage} 
-                                        className="btn btn-secondary mt-3 profile-default-button"
+                                        className="btn btn-secondary mt-1 profile-default-button"
                                     >기본 이미지로 변경</button>
                                 </div>
                             </div>
@@ -247,6 +237,9 @@ function Mypage() {
                                         {userData.message}
                                     </div>
                                 )}
+                                <div className="text-body-secondary">
+                                    {userData.email}
+                                </div>
                                 <p className="mt-2 text-muted">
                                     팔로워 {userData.followers} 팔로잉 {userData.following}
                                 </p>
@@ -310,26 +303,9 @@ function Mypage() {
                                     </div>
                                 </div>
                                 <div className="settings-item">
-                                
                                     <span>이메일</span>
-                                    <div>
-                                        {isEditing ? (
-                                            <div className="button-group">
-                                                {errors.email && <span className="text-danger ms-2 fs-6">이메일 형식이 아닙니다</span>}
-                                                <input 
-                                                    type="email" 
-                                                    value={userData.email}
-                                                    onChange={(e) => handleChange('email', e.target.value)}
-                                                    placeholder="example@email.com"
-                                                    className="field-input email"
-                                                    id="email-input"
-                                                />
-                                            </div>
-                                        ) : (
-                                            <div className="default-item">
-                                                <span className="text-muted">{userData.email}</span>
-                                            </div>
-                                        )}
+                                    <div className="default-item">
+                                        <span className="text-muted">{userData.email}</span>
                                     </div>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { createUser } from "../api/UserApiService";
+import { signupApi } from "../api/MemberApiService";
 
 const Signup = () => {
   const [formData, setFormData] = useState({ // name, password, email, phone만 전송
@@ -38,7 +38,7 @@ const Signup = () => {
     // 비밀번호 검사
     if (!formData.password) {
       newErrors.password = '비밀번호를 입력해주세요';
-    } else if (formData.password.length < 6 || formData.password.length > 20) {
+    } else if (formData.password.length < 6 || formData.password.length > 30) {
       newErrors.password = '비밀번호는 6~20자 사이여야 합니다';
     }
 
@@ -52,7 +52,7 @@ const Signup = () => {
     // 이름 검사
     if (!formData.username) {
       newErrors.name = '이름을 입력해주세요';
-    } else if (formData.username.length < 2 || formData.username.length > 10) {
+    } else if (formData.username.length < 2 || formData.username.length > 100) {
       newErrors.name = '이름은 2~10자 사이여야 합니다';
     }
 
@@ -104,25 +104,23 @@ const Signup = () => {
     setShowVerification(true);
     // TODO: 실제 이메일 인증 요청 로직 구현
   };
-  async function getUserCreateStatus(user){
-    try{
-      const response = await createUser(user)
-      return response.status===200
-    } catch(error){
-      return false
-    }
-
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const response = await getUserCreateStatus(userData)
-      if(response){
-        alert('회원가입 성공')
-        navigate('/login')
-      }else{
-        alert(`서버 응답${response.status}`)
+      try{
+        const res = await signupApi(userData)
+        if(res.status ===200){
+          alert('회원가입 성공')
+          navigate('/login')
+        }
+      } catch(error){
+        console.log(error.response.data)
+        const newErrors = {};
+        Object.entries(error.response.data).forEach(([key, value]) => {
+          newErrors[key] = value;
+          setErrors(newErrors);
+      });
       }
     } else {
       console.log('폼 검증 실패');
@@ -272,7 +270,6 @@ const Signup = () => {
             </div>
           </div>
         </div>
-
         <div className="container-button">
         <Link to={'/login'} className={'back-button'}>뒤로가기</Link>
         <button type="submit" className="submit-button">

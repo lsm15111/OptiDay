@@ -1,37 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import '../styles/Main.css'
-import { useAuth } from "../context/AuthContext"
 import Calendar from "../components/Calendar"
-import { useTodo } from '../context/TodoContext';
+import { useDispatch } from 'react-redux';
+import { fetchCategories } from '../redux/slices/categorySlice';
+import { fetchTodos } from '../redux/slices/todoSlice';
+
 
 function Main(){
-    const {username} = useAuth()
-    const {fetchTodos, fetchCategories} = useTodo();
-    const [isLoading, setIsLoading] = useState(true);
+    // const [isLoading, setIsLoading] = useState(true);
 
+    const dispatch = useDispatch();
     useEffect(() => {
-        const call = async () => {
-            await fetchTodos(username);
-            await fetchCategories(username);
-            setIsLoading(false); // Set loading to false after fetching todos
-        };
-        call();
-    },[]);
+        dispatch(fetchCategories());
+        dispatch(fetchTodos());
+    },[dispatch])
 
-    if(isLoading) return(<div>로딩중</div>)
+
+    // if(isLoading) return(<div className="main contents">로딩중</div>)
     return(
         <div className="main contents">
             {/* <div className="p-2">
             <Todoslist username={username}/>
             </div> */}
-            
-                <div className="row justify-content-center">
-
-            <div className="w-100 p-2 ">
-            <Calendar username={username}/>
-                <div className="feedback p-2 mt-2 rounded">피드백
+            <div className="row justify-content-center">
+                <div className="w-100 p-2 ">
+                    <Calendar/>
+                    <div className="feedback p-2 mt-2 rounded">피드백</div>
                 </div>
-            </div>
             </div>
         </div>
     )
