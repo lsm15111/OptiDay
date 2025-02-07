@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.jpa;
+package com.optiday_min.optiday.repository;
 
 import com.optiday_min.optiday.domain.Member;
 import org.springframework.data.domain.Page;

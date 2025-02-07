@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.jpa;
+package com.optiday_min.optiday.repository;
 
 import com.optiday_min.optiday.domain.Category;
 import org.springframework.data.jpa.repository.JpaRepository;

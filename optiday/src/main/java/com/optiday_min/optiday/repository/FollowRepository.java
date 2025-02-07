@@ -1,4 +1,4 @@
-package com.optiday_min.optiday.jpa;
+package com.optiday_min.optiday.repository;
 
 import com.optiday_min.optiday.domain.Follow;
 import com.optiday_min.optiday.domain.Member;
@@ -8,12 +8,15 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     boolean existsByFollowerAndFollowing(Member follower, Member following);
 
     boolean existsByFollowerIdAndFollowingId(Long followerId, Long followingId);
+
+    Optional<Follow> findByFollowerIdAndFollowingId(Long followerId, Long followingId);
 
     void deleteByFollowerAndFollowing(Member follower, Member following);
 
