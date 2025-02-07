@@ -1,68 +1,69 @@
-// import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
+import { retrieveFollowApi } from "../../api/FollowApiService";
 
-
-// const followSlice = createSlice({
-//     name: 'follow',
-//     initialState: {
-//         follows: [],
-//     },
-//     reducers: {
-//         setFollow: (state, action) => {
-//             state.follows = action.payload;
-//         },
-//         addFollow: (state, action) => {
-//             state.follows.push(action.payload);
-//         },
-//         deleteFollow: (state, action) => {
-//             state.follows = state.follows.filter(follow => follow.id !== action.payload);
-//         },
-//         addFollows: (state, action) => {
-//             state.follows = [...state.follows, ...action.payload]; // 여러 개 추가
-//         },
-//         updateFollow: (state, action) => {
-//             const updatedData = action.payload;
-//             const followIndex = state.follows.findIndex(follow => follow.id === updatedData.id);
-//             if(followIndex !== -1) {
-//                 state.follows[followIndex] = { ...state.follows[followIndex], ...updatedData };
-//             }
-//         }
-//     }
-// });
-
-// export const { setFollow, addFollow,addFollows, deleteFollow,updateFollow } = followSlice.actions;
-// export default followSlice.reducer;
-
-
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { retrieveFollowersApi, retrieveFollowingsApi } from "../../api/FollowApiService";
-
-export const fetchFollowers = createAsyncThunk("retrieveFollowersApi", async () => {
-    const res = await retrieveFollowersApi();
+export const fetchFollow = createAsyncThunk("retrieveFollow", async () =>{
+    const res = await retrieveFollowApi();
+    console.log("fetchFollow",res.data);
     return res.data;
+
 });
 
-export const fetchFollowings = createAsyncThunk("retrieveFollowingsApi", async () => {
-    const res = await retrieveFollowingsApi();
-    return res.data;
-});
+// 메모이제이션된 selector 정의
+export const selectFollowers = createSelector(
+    (state) => state.follow.follows,
+    (follows) => follows.filter(follow => follow.status === 'FOLLOWER' || follow.status === 'MUTUAL')
+);
+export const selectFollowings = createSelector(
+    (state) => state.follow.follows,
+    (follows) => follows.filter(follow => follow.status === 'FOLLOWING' || follow.status === 'MUTUAL')
+);
 
 const followSlice = createSlice({
     name: "follow",
-    initialState: { followers: [], followings: [] },
+    initialState: { 
+        follows:[]
+    },
     reducers: {
         addFollow: (state, action) => {
-            state.followers.push(action.payload);
+            const followId = action.payload;
+            const follow = state.follows.find(f => f.id === followId);
+            follow.state = 'MUTUAL'; // 팔로우 상태 업데이트
         },
+        unFollow: (state, action) => {
+            const followId = action.payload;
+            const followIndex = state.follows.findIndex(f => f.id === followId);
+
+            if (followIndex !== -1) {
+                const follow = state.follows[followIndex];
+                if (follow.state === 'MUTUAL') {
+                    follow.state = 'FOLLOWER'; // 상태를 FOLLOWER로 변경
+                } else if (follow.state === 'FOLLOWING') {
+                    state.follows = [
+                        ...state.follows.slice(0, followIndex),
+                        ...state.follows.slice(followIndex + 1),
+                    ]; // 배열에서 삭제
+                }
+            }
+        },
+        updateFollow: (state, action) => {
+            const updatedData = action.payload;
+            console.log("updateFollow Action",updatedData);
+            // console.log(action);
+            // const todoIndex = state.todos.findIndex(todo => todo.id === updatedData.id);
+            // if(todoIndex !== -1) {
+            //     state.todos[todoIndex] = { ...state.todos[todoIndex], ...updatedData };
+            // }
+        }
     },
     extraReducers: (builder) => {
         builder
-            .addCase(fetchFollowers.fulfilled, (state, action) => {
-                state.followers = action.payload;
+            .addCase(fetchFollow.fulfilled, (state, action) => {
+                console.log("Action PayLoad",action.payload);
+                state.follows = action.payload;
             })
-            .addCase(fetchFollowings.fulfilled, (state, action) => {
-                state.followings = action.payload;
-            });
     },
 });
 
+
+export const { addFollow, unFollow, updateFollow } = followSlice.actions;
 export default followSlice.reducer;
