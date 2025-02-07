@@ -1,6 +1,6 @@
 package com.optiday_min.optiday.dto;
 
-import com.optiday_min.optiday.entity.Member;
+import com.optiday_min.optiday.domain.Member;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Getter;
