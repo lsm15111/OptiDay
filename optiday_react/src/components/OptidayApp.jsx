@@ -1,17 +1,16 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"
 import Sidebar from "./bars/Sidebar"
 import Headerbar from "./bars/Headerbar"
+import Login from "../pages/Login"
+import Signup from "../pages/Signup"
+
 import Feedback from "../pages/Feedback"
 import Main from "../pages/Main"
-import Login from "../pages/Login"
 import Mypage from "../pages/Mypage"
-import Signup from "../pages/Signup"
 import Follow from "../pages/Follow"
-
 import '../styles/OptidayApp.css'
 import AuthProvider, { useAuth } from "../context/AuthContext"
-import TodoProvider from "../context/TodoContext"
-import FollowProvider from "../context/FollowContext"
+
 
 function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 보여주기
   const authContext = useAuth()
@@ -39,17 +38,14 @@ function OptidayApp(){
         <Routes>
 
           {/* path '/' */}
-
           <Route path='/' element={ <Login/> }/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/signup' element={<Signup/>}/>
           
           {/* 인증 필요 */}
-          <Route path='/main/:username' element={
+          <Route path='/main' element={
             <AuthenticatedRoute>
-              <TodoProvider>
                 <Main/>
-              </TodoProvider>
             </AuthenticatedRoute>
             }/>
           <Route path='/feedback' element={
@@ -64,9 +60,7 @@ function OptidayApp(){
             }/>
           <Route path='/follow' element={
             <AuthenticatedRoute>
-              <FollowProvider>
                 <Follow/>
-              </FollowProvider>
             </AuthenticatedRoute>
             }/>
 

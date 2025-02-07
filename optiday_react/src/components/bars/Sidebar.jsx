@@ -2,18 +2,16 @@ import React from "react";
 import { Calendar, ChartColumn, House, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import '../../styles/Sidebar.css';
-import { useAuth } from "../../context/AuthContext";
 
 function Sidebar() {
     const location = useLocation();
     const currentPath = location.pathname;
-    const {username} = useAuth()
     
     return (
         <div className="sidebar">
             <Link 
-                to={`/main/${username}`}
-                className={`sideicon ${currentPath === `/main/${username}` ? 'active' : ''}`}
+                to={`/main`}
+                className={`sideicon ${currentPath === `/main` ? 'active' : ''}`}
             >
                 <House size={30} className="text-white" />
             </Link>

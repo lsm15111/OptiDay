@@ -1,17 +1,19 @@
 import { Search, Menu } from "lucide-react"
 import { Link } from "react-router-dom"
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import '../../styles/Headerbar.css'
 import { useAuth } from "../../context/AuthContext";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMessage } from "../../redux/slices/messageSlice";
 
 function Headerbar(){
     const [isSearchActive, setIsSearchActive] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     const inputRef = useRef(null);
-    const authContext = useAuth();
-
-
+    const {logout} = useAuth(); 
+    const message = useSelector(state => state.message.message);
+    
 
     const handleFocus = () => {
         setIsSearchActive(true);
@@ -27,9 +29,9 @@ function Headerbar(){
         }, 100);
     };
     function handleLogout(){
-        authContext.logout();
+        logout();
+        window.location.href = '/login';
     }
-
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -40,9 +42,9 @@ function Headerbar(){
                 <div className="row ms-2 me-2 headerbar-container">
                     <nav className="navbar headerbar-nav">
                         <div className="headerbar-left">
-                            <a className="navbar-brand text-black headerbar-brand fs-3" href="/">OptiDay</a>
+                            <Link className="navbar-brand text-black headerbar-brand fs-3" to="/main">OptiDay</Link>
                             <div className="headerbar-items">
-                                <div className="nav-link headerbar-link fs-5" >안녕하세요</div>
+                                <div className="nav-link headerbar-link fs-5" >{message}</div>
                                 {/* <div className="friend_img"></div>
                                 <div className="friend_img"></div> */}
                             </div>

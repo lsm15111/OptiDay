@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/TodoModal.css';
-import { useAuth } from '../../context/AuthContext';
-import { useTodo } from '../../context/TodoContext';
 import { Check, X } from 'lucide-react';
+import { createTodoApi } from '../../api/TodoApiService';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTodo } from '../../redux/slices/todoSlice';
 
 const TodoModal = ({ isOpen, onClose }) => {
     // const [isPublic, setIsPublic] = useState(false);
-    const { createTodo, categories  } = useTodo();
-    const { username} = useAuth();
+    const dispatch = useDispatch();
+    const categories = useSelector((state) => state.categories.categories);
     const [todo, setTodo] = useState({
         title: '',
         startDate: '',
@@ -23,14 +24,23 @@ const TodoModal = ({ isOpen, onClose }) => {
     }
 
     const handleFormSubmit = async (event) => {
+        // startDate와 endDate 검증
+        if (new Date(todo.startDate) > new Date(todo.endDate)) {
+            alert("시작일은 종료일보다 이전이어야 합니다.");
+            return; // 검증 실패 시 함수 종료
+        }
+
         if(todo.categoryId === 'none') todo.categoryId=null;
         event.preventDefault(); // 폼 제출 시 기본 동작 방지
         try {
-            const res = await createTodo(username, todo); 
-            if(res){
+            const response = await createTodoApi(todo);
+
+            if(response.status === 200){
+                dispatch(addTodo(response.data));
                 handleExit();
             }
         } catch (error) {
+            alert("서버 응답 실패")
             console.error(error);
         }
     }
@@ -67,11 +77,11 @@ const TodoModal = ({ isOpen, onClose }) => {
             <div className="modal-content">
                 <div className="d-flex justify-content-between align-items-center mb-1">
                     <X size={30} onClick={handleExit} className='btn-x'></X>
-                    {isMessage && <div className='text-danger'>날짜를 입력해주세요</div>}
+                    {isMessage && <div className='text-danger'>제목과 날짜를 입력해주세요</div>}
                     <Check 
                         size={30} 
                         className='btn-edit' 
-                        onClick={todo.title.length < 2 || !todo.startDate || !todo.endDate ? handleError : handleFormSubmit} 
+                        onClick={todo.title.length < 1 || !todo.startDate || !todo.endDate ? handleError : handleFormSubmit} 
                     />
                     {/* <button className="" onClick={handleFormSubmit} disabled={todo.title.length < 2 || !todo.startDate || !todo.endDate}></button> */}
                     {/* <div className="d-flex justify-content-end">

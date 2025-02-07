@@ -1,7 +1,6 @@
 import { useState } from "react";
 import '../styles/Todolist.css'
 import DailyTodoModal from './modals/DetailTodoModal';
-import { useTodo } from "../context/TodoContext";
 
 function Todoslist({username}){
 

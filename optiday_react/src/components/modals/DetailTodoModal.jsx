@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { useAuth } from '../../context/AuthContext';
-import { useTodo } from '../../context/TodoContext';
 import { Check, Edit, Trash2, X } from 'lucide-react';
 import '../../styles/DailyTodoModal.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { deleteTodo, updateTodo } from '../../redux/slices/todoSlice';
+import { deleteTodoApi, updateTodoApi } from '../../api/TodoApiService';
 
-function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate }) {
+function DailyTodoModal({ todo, isOpen, onClose }) {
+
+  const categories = useSelector(state => state.categories.categories);
+  const dispatch = useDispatch();
 
   const [isEditing, setIsEditing] = useState(false);
   const [editTodo, setEditTodo] = useState({
+    id: '',
     title: '',
     startDate: '',
     endDate: '',
@@ -18,11 +23,11 @@ function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate })
 
   const [isMessage,setIsMessage] = useState(false);
 
-  const { updateTodo,deleteTodo,categories } = useTodo();
 
   useEffect(() => {
     if (todo) {
       setEditTodo({
+        id: todo.id,
         title: todo.title,
         startDate: todo.startDate,
         endDate: todo.endDate,
@@ -44,14 +49,13 @@ function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate })
 
   const handleTodoUpdate = async () => {
     if(editTodo.categoryId === '카테고리 선택'){editTodo.categoryId = null}
-    console.log(editTodo)
     // Todo 업데이트 API 호출
     try{
-    const res = await updateTodo(username, todo.id, editTodo);
-
-    if (res) {
-        onUpdate(res); // 업데이트 후 핸들러 호출
-        handleExit();
+    const res = await updateTodoApi(todo.id, editTodo);
+    if (res.status === 200) {
+      console.log(editTodo)
+      dispatch(updateTodo(editTodo))
+      handleExit();
     }
   }catch(error){
     console.error(error);
@@ -60,9 +64,9 @@ function DailyTodoModal({ todo, isOpen, onClose, username, onDelete, onUpdate })
 
   const handleTodoDelete = async () => {
     try {
-      const res = await deleteTodo(username, todo.id);
-      if(res){
-        onDelete(todo.id); 
+      const res = await deleteTodoApi(todo.id);
+      if(res.status === 200){
+        dispatch(deleteTodo(todo.id));
         handleExit();
       }
     } catch (error) {
