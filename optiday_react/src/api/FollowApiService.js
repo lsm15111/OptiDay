@@ -1,11 +1,11 @@
 import { apiClient } from "./ApiClient";
 
-export const getFollowersApi 
-    = (id) => apiClient.get(`/followers/${id}`)
-export const getFollowingsApi 
-    = (id) => apiClient.get(`/following/${id}`)
+
+export const retrieveFollowApi
+    = () => apiClient.get(`/follows/relations`)
 
 export const followApi 
-    = (memberId, followId) => apiClient.post(`/follow/${memberId}/${followId}`)
+    = (targetId) => apiClient.post(`/follows/${targetId}`)
 export const unfollowApi 
-    = (memberId, followId) => apiClient.delete(`/unfollow/${memberId}/${followId}`)
+    = (targetId) => apiClient.delete(`/follows/${targetId}`)
+
