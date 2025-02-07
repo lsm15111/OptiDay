@@ -1,6 +1,6 @@
 package com.optiday_min.optiday.jpa;
 
-import com.optiday_min.optiday.entity.Member;
+import com.optiday_min.optiday.domain.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

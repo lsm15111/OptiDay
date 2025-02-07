@@ -1,8 +1,8 @@
 package com.optiday_min.optiday.jpa;
 
-import com.optiday_min.optiday.entity.Category;
-import com.optiday_min.optiday.entity.Member;
-import com.optiday_min.optiday.entity.Todo;
+import com.optiday_min.optiday.domain.Category;
+import com.optiday_min.optiday.domain.Member;
+import com.optiday_min.optiday.domain.Todo;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 

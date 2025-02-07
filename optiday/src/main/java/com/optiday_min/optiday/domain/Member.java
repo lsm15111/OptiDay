@@ -1,11 +1,13 @@
 package com.optiday_min.optiday.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.optiday_min.optiday.jwt.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -20,49 +22,53 @@ import java.util.List;
 public class Member {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Size(min=2, max=10, message = "Name Length 2~10")
+    private Long id;
+    @NotBlank(message = "이름은 필수 입력 값입니다.")
+    @Size(min=2, max=10, message = "이름은 2~10자까지 입력가능합니다.")
     private String username;
-    private String password;
-    @Size(max=15, message = "Message Max Length 15")
+    @Size(max=15, message = "메세지는 15자까지 입력가능합니다.")
     private String message;
-    // **미래 금지 제약필요
-    @JsonFormat(pattern = "yyyy-MM-dd")
+
+
+    // 생년월일: 미래 날짜 금지
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @PastOrPresent(message = "생년월일은 미래 날짜로 설정할 수 없습니다.")
     private LocalDate birthdate;
-    @Email
-    private String email;
+    // 전화번호: 숫자, 하이픈(-) 허용
+
     private String phone;
 
     // 나의 일정 목록
+    @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Todo> todos = new ArrayList<>();
 
     // 나의 카테고리
+    @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<Category> categories = new ArrayList<>();
 
     // 내가 팔로우한 사람들
+    @JsonIgnore
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followings = new ArrayList<>();
 
     // 나를 팔로우한 사람들
+    @JsonIgnore
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
-
-
 
     @Override
     public String toString() {
         return "Member{" +
                 "phone=" + phone +'\'' +
-                ", email='" + email + '\'' +
                 ", birthday=" + birthdate +
                 ", message='" + message + '\'' +
-                ", password='" + password + '\'' +
                 ", username='" + username + '\'' +
                 ", id=" + id +
                 '}';
     }
+
 }

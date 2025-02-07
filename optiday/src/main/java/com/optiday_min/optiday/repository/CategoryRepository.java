@@ -1,6 +1,6 @@
 package com.optiday_min.optiday.jpa;
 
-import com.optiday_min.optiday.entity.Category;
+import com.optiday_min.optiday.domain.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

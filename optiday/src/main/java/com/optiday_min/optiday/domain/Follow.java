@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Follow {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "follow_id")
     private Long id;
 

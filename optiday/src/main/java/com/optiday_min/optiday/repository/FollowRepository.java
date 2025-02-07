@@ -1,7 +1,7 @@
 package com.optiday_min.optiday.jpa;
 
-import com.optiday_min.optiday.entity.Follow;
-import com.optiday_min.optiday.entity.Member;
+import com.optiday_min.optiday.domain.Follow;
+import com.optiday_min.optiday.domain.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
