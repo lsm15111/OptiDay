@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MemberProfile {
-    private Integer id;
+    private Long id;
     private String username;
     private String message;
     private String email;

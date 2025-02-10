@@ -27,6 +27,7 @@ public class DtoMapper {
         int followersCount = pickMember.getFollowers().size();
         int followingCount = pickMember.getFollowings().size();
         return MemberProfile.builder()
+                .id(pickMember.getId())
                 .username(pickMember.getUsername())
                 .message(pickMember.getMessage())
                 .followersCount(followersCount) //나를 팔로우 한사람
