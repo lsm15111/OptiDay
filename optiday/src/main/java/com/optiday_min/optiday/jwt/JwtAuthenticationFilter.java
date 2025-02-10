@@ -1,5 +1,6 @@
 package com.optiday_min.optiday.jwt;
 
+import com.optiday_min.optiday.exception.InvalidTokenException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,7 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = null;
 
         // 헤더에서 Bearer 토큰 추출
-
         token = jwtTokenUtil.extractToken(authorizationHeader);
         if(token != null) {
             email = jwtTokenUtil.getEmailFromToken(token);
@@ -36,9 +36,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         // 사용자 인증 설정
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             Long memberId = jwtTokenUtil.getMemberId(token);
-            logger.info("MemberId Get : " + memberId);
             String role = jwtTokenUtil.getRoleFromToken(token);
-            logger.info("Role Get : " + role);
             CustomUserDetails userDetails = new CustomUserDetails(memberId,email,null,role);
             if (jwtTokenUtil.validateToken(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
@@ -47,7 +45,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-
         chain.doFilter(request, response);
     }
 }
