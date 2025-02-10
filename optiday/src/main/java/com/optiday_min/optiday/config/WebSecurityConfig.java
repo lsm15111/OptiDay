@@ -26,7 +26,6 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class WebSecurityConfig {
 
     private final JwtTokenUtil jwtTokenUtil;
-    private final CustomUserDetailsService customUserDetailsService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -34,7 +33,10 @@ public class WebSecurityConfig {
         // h2-console is a servlet
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/authenticate","/api/members","/h2-console").permitAll()
+                        .requestMatchers(
+                                "/api/authenticate",
+                                "/api/members/signup",
+                                "/h2-console").permitAll()
 
                         .requestMatchers(PathRequest.toH2Console()).permitAll() // h2-console is a servlet and NOT recommended for a production
                         .anyRequest().authenticated()
@@ -50,7 +52,7 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults());
         // 특정 URL 제외한 필터 적용
         httpSecurity
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenUtil, customUserDetailsService), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
 
