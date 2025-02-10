@@ -39,12 +39,12 @@ public class FollowController {
     
     // 팔로우 A 가 B를 추가
     @PostMapping("/{targetId}")
-    public ResponseEntity<String> follow(@RequestHeader("Authorization") String token,
+    public ResponseEntity<FollowResponse> follow(@RequestHeader("Authorization") String token,
                                          @PathVariable Long targetId) {
         Long memberId = userService.getMemberIdForToken(token);
         followYourself(memberId, targetId); // 잘못된 요청
-        followService.follow(memberId,targetId);
-        return ResponseEntity.ok("팔로우 성공!");
+        FollowResponse response = followService.follow(memberId,targetId);
+        return ResponseEntity.ok(response);
     }
 
     // 언팔로우

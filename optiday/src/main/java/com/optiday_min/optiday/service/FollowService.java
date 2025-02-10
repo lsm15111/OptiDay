@@ -31,7 +31,7 @@ public class FollowService {
     }
 
     // 팔로우
-    public void follow(Long memberId, Long targetId) {
+    public FollowResponse follow(Long memberId, Long targetId) {
         Member follower = memberService.getMemberIdForMember(memberId,"팔로우 요청자가 존재하지 않습니다.");
         Member following = memberService.getMemberIdForMember(targetId,"팔로우 대상이 존재하지 않습니다.");
         //이미 팔로우 하고 있는지 확인
@@ -39,7 +39,20 @@ public class FollowService {
             throw new IllegalArgumentException("이미 팔로우한 사용자입니다.");
         }
         Follow follow = Follow.create(follower,following);
+
+        // Follow 상태
+        FollowStatus state = followRepository.existsByFollowerAndFollowing(following, follower)? FollowStatus.MUTUAL:FollowStatus.FOLLOWING;
+        logger.info("state : "+state);
+        // Follow 저장
         followRepository.save(follow);
+
+        FollowResponse response = new FollowResponse(
+                following.getId(),
+                following.getUsername(),
+                following.getMessage(),
+                state
+        );
+        return response;
     }
 
     // 언팔로우
