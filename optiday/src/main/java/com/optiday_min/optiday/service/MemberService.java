@@ -2,12 +2,9 @@ package com.optiday_min.optiday.service;
 
 
 import com.optiday_min.optiday.dto.*;
-import com.optiday_min.optiday.entity.Member;
-import com.optiday_min.optiday.jpa.FollowRepository;
-import com.optiday_min.optiday.jpa.MemberRepository;
-import com.optiday_min.optiday.jwt.JwtTokenUtil;
-import com.optiday_min.optiday.jwt.User;
-import com.optiday_min.optiday.jwt.UserRepository;
+import com.optiday_min.optiday.domain.Member;
+import com.optiday_min.optiday.repository.FollowRepository;
+import com.optiday_min.optiday.repository.MemberRepository;
 import com.optiday_min.optiday.jwt.UserService;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
@@ -24,22 +21,27 @@ public class MemberService {
 
     private final MemberRepository memberRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
     private final FollowRepository followRepository;
-    private final JwtTokenUtil jwtTokenUtil;
 
 
+    // memberId
     public Member getMemberIdForMember(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(()->new EntityNotFoundException("Member not found"));
     }
+    // memberId, message Overloading
+    public Member getMemberIdForMember(Long memberId,String message) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(()->new EntityNotFoundException(message));
+    }
 
     // 회원가입 (기본값 데이터 추가, 비밀번호 암호화)
-    public Member registerMember(SignUpRequestDto signUpRequest) {
-        // 이름 중복 검사
+    public Member registerMember(SignUpRequest signUpRequest) {
+        // User 에서 Email 중복 검사
         if(userService.isEmail(signUpRequest.getEmail())) {
             throw new EntityExistsException("Email already exists");
         }
+        // Member 에서 Username 중복 검사
         if(isUsername(signUpRequest.getUsername())) {
             throw new EntityExistsException("Username already exists");
         }
@@ -50,10 +52,14 @@ public class MemberService {
         return member;
     }
 
+    public void deleteAccount(Long memberId,AccountDeleteRequest accountDeleteRequest) {
+        userService.deleteUser(memberId,accountDeleteRequest);
+        memberRepository.deleteById(memberId);
+    }
+
     // 특정 사용자 정보와 팔로워/팔로잉 수 반환
     public ProfileDto getUserWithFollowCount(Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(()->new EntityNotFoundException("Member not found"));
+        Member member = getMemberIdForMember(memberId);
         String email = userService.getEmailByMemberId(memberId);
         return DtoMapper.toProfileDto(member,email);
     }
@@ -95,7 +101,6 @@ public class MemberService {
 
         // Pageable 객체 생성
         PageRequest pageable = PageRequest.of(currentPage, pageSize, Sort.by("id").ascending());
-
         // 검색 조건 적용
         if (search == null || search.isEmpty()) {
             return memberRepository.findByIdNot(myId,pageable);
@@ -135,24 +140,24 @@ public class MemberService {
 //        return memberRepository.findByEmail(email)
 //                .orElseThrow(()-> new EntityNotFoundException("Member not found"));
 //    }
-//    public MemberProfile getMemberProfile(Integer memberId, Integer pickMemberId) {
-//        Member member = memberRepository.findById(pickMemberId)
-//                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
-//        String status = followStatus(memberId,pickMemberId);
-//        return DtoMapper.toMemberProfileDto(memberId,member,status);
-//    }
+    public MemberProfile getMemberProfile(Long memberId, Long pickMemberId) {
+        Member pickMember = memberRepository.findById(pickMemberId)
+                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+        String status = followStatus(memberId,pickMemberId);
+        return DtoMapper.toMemberProfileDto(pickMember,status);
+    }
 
     private String followStatus(Long memberId, Long pickMemberId) {
-        //나의 팔로잉목록에 상대방이 있는지
+        //나 -> 상대방
         boolean follower = followRepository.existsByFollowerIdAndFollowingId(memberId,pickMemberId);
-        //상대방의 팔로잉 목록에 내가 있는지
+        //상대방 -> 나
         boolean following = followRepository.existsByFollowerIdAndFollowingId(pickMemberId,memberId);
         // 맞팔 상태
         if(follower&&following) return "MUTUAL";
         // 상대방 -> 나
-        if(follower) return "FOLLOWER";
+        if(follower) return "FOLLOWING";
         // 나 -> 상대방
-        if(following) return "FOLLOWING";
+        if(following) return "FOLLOWER";
         // 서로 팔로우하지 않은 상태
         return "NONE";
     }
