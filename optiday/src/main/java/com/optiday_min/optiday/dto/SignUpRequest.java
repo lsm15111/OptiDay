@@ -2,9 +2,7 @@ package com.optiday_min.optiday.dto;
 
 import com.optiday_min.optiday.domain.Member;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
