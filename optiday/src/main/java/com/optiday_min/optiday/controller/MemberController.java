@@ -48,7 +48,7 @@ public class MemberController {
     }
 
     // 사용자 삭제
-    @DeleteMapping("")
+    @DeleteMapping
     public ResponseEntity<String> deleteMember(@RequestHeader("Authorization") String token
                                                , @RequestBody AccountDeleteRequest accountDeleteRequest) {
         Long memberId = userService.getMemberIdForToken(token);
@@ -82,8 +82,6 @@ public class MemberController {
         return ResponseEntity.ok(memberProfile);
     }
 
-//    @PostMapping("/passwordCheck")
-
     // 계정 검색 멤버 데이터 반환 (Follow Search)
     @GetMapping("/search")
     public Page<?> getMembers(
@@ -93,8 +91,6 @@ public class MemberController {
             @RequestParam(value = "search", defaultValue = "") String search // 검색어 추가
     ) {
         Long memberId = userService.getMemberIdForToken(token);
-        // int batchSize = 10; // 10페이지 묶음 단위
-        int startPage = currentPage; //시작 페이지 계산
 
         // 10개단위 페이지 반환
         // (시작크기,시작+size 까지,검색어)
