@@ -21,7 +21,6 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final MemberService memberService;
-    private final UserService userService;
     private final static Logger logger = LoggerFactory.getLogger(FollowService.class);
 
     //TODO : 관리자 설정
@@ -42,7 +41,6 @@ public class FollowService {
 
         // Follow 상태
         FollowStatus state = followRepository.existsByFollowerAndFollowing(following, follower)? FollowStatus.MUTUAL:FollowStatus.FOLLOWING;
-        logger.info("state : "+state);
         // Follow 저장
         followRepository.save(follow);
 
@@ -76,6 +74,11 @@ public class FollowService {
                 .map(follow -> DtoMapper.toFollowResponse(follow, memberId, followingIds, followerIds))
                 .distinct()
                 .collect(Collectors.toList());
+    }
+    
+    // memberId -> followingId 존재 체크
+    public boolean isFollowing(Long memberId, Long targetId) {
+        return followRepository.existsByFollowerIdAndFollowingId(memberId,targetId);
     }
 
     private Set<Long> getFollowingIds(List<Follow> followRelations, Long memberId) {
