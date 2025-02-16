@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom"
-import Sidebar from "./bars/Sidebar"
-import Headerbar from "./bars/Headerbar"
+import Sidebar from "./layout/Sidebar"
+import Headerbar from "./layout/Headerbar"
 import Login from "../pages/Login"
 import Signup from "../pages/Signup"
 
@@ -14,10 +14,9 @@ import AuthProvider, { useAuth } from "../context/AuthContext"
 
 function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 보여주기
   const authContext = useAuth()
-
-  if(!authContext.isAuthLoaded){
-    return <div>로딩중...</div>
-  }
+  // if(!authContext.isAuthLoaded){
+  //   return <div>Loading...</div>
+  // }
   if(authContext.isAuthenticated){
     return children
   }
@@ -31,10 +30,13 @@ function OptidayApp(){
   return(
     <div className="OptidayApp">
       <AuthProvider>
-
-      {!isLoginPage&&<Headerbar/>}
+      <AuthenticatedRoute>
+        {!isLoginPage&&<Headerbar/>}
+      </AuthenticatedRoute>
       <div className="center">
-      {!isLoginPage&&<Sidebar/>}
+      <AuthenticatedRoute>
+        {!isLoginPage&&<Sidebar/>}
+      </AuthenticatedRoute>
         <Routes>
 
           {/* path '/' */}
@@ -55,7 +57,7 @@ function OptidayApp(){
           }/>
           <Route path='/mypage' element={
             <AuthenticatedRoute>
-            <Mypage/>
+              <Mypage/>
             </AuthenticatedRoute>
             }/>
           <Route path='/follow' element={
