@@ -1,6 +1,5 @@
 import { apiClient } from "./ApiClient";
 
-
 export const retrieveFollowApi
     = () => apiClient.get(`/follows/relations`)
 
