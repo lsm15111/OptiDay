@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import '../styles/Main.css'
 import Calendar from "../components/Calendar"
 import { useDispatch } from 'react-redux';
@@ -22,10 +22,14 @@ function Main(){
             {/* <div className="p-2">
             <Todoslist username={username}/>
             </div> */}
-            <div className="row justify-content-center">
-                <div className="w-100 p-2 ">
-                    <Calendar/>
-                    <div className="feedback p-2 mt-2 rounded">피드백</div>
+            <div className='d-flex justify-content-center'>
+                {/* <div className='main-categorylist-box'>
+                <Categorylist />
+                </div> */}
+                <div className="row ">
+                    <div className="w-100 p-2 ">
+                        <Calendar/>
+                    </div>
                 </div>
             </div>
         </div>
