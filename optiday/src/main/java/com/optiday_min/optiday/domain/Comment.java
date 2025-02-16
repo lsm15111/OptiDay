@@ -1,6 +1,7 @@
 package com.optiday_min.optiday.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class Comment {
 
     private String comment;
 
-    //댓글 날짜
+    //댓글 작성일
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -31,6 +32,10 @@ public class Comment {
     @JsonIgnore
     private Todo todo;
 
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false)
+    @JsonBackReference
+    private Member member;
 
     public Comment(String comment, Todo todo) {
         this.comment = comment;
