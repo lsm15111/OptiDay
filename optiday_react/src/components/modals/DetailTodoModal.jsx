@@ -4,7 +4,7 @@ import { Check, Edit, Trash2, X } from 'lucide-react';
 import '../../styles/DailyTodoModal.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteTodo, updateTodo } from '../../redux/slices/todoSlice';
-import { deleteTodoApi, updateTodoApi } from '../../api/TodoApiService';
+import { deleteTodoApi, updateTodoApi } from '../../api/TodoApi';
 
 function DailyTodoModal({ todo, isOpen, onClose }) {
 
@@ -48,13 +48,12 @@ function DailyTodoModal({ todo, isOpen, onClose }) {
 
 
   const handleTodoUpdate = async () => {
-    if(editTodo.categoryId === '카테고리 선택'){editTodo.categoryId = null}
+    if(editTodo.categoryId === 'none') editTodo.categoryId=null;
     // Todo 업데이트 API 호출
     try{
     const res = await updateTodoApi(todo.id, editTodo);
     if (res.status === 200) {
-      console.log(editTodo)
-      dispatch(updateTodo(editTodo))
+      dispatch(updateTodo(res.data))
       handleExit();
     }
   }catch(error){
@@ -122,12 +121,12 @@ function DailyTodoModal({ todo, isOpen, onClose }) {
               <div style={{ marginTop: '10px',marginBottom: '10px', display: 'flex', alignItems: 'center', marginRight: '100px' }}>
                 <label className='me-2 mt-2'>카테고리</label>
                 <select className="form-control w-25" name="categoryId" value={editTodo.categoryId} onChange={handleInputChange}>
-                  <option >카테고리 선택</option>
-                  {Array.isArray(categories) && categories.map(category => (
+                  <option value='none'>카테고리 선택</option>
+                  {categories&& categories.map(category => (
                     <option key={category.id} value={category.id} style={{ color: category.color, fontWeight: 'bold' }}>
-                      {category.name}
+                        {category.name}
                     </option>
-                  )) }
+                  ))}
                 </select>
               </div>
               <div>
@@ -150,7 +149,7 @@ function DailyTodoModal({ todo, isOpen, onClose }) {
             <div className='m-1'>
             <h2>{todo.title}</h2>
             <p><strong>날짜:</strong> {todo.startDate} ~ {todo.endDate}</p>
-            <p><strong>설명:</strong> {todo.description}</p>
+            <p><strong>메모:</strong> {todo.description}</p>
             </div>
           </div>
         )}
