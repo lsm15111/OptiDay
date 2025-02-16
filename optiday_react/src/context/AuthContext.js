@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useRef } from "react";
-import { executeJwtAuthenticationService } from "../api/AuthenticationApiService";
+import { executeJwtAuthenticationService } from "../api/AuthenticationApi";
 import { apiClient } from "../api/ApiClient";
 import { jwtDecode } from "jwt-decode";
 
@@ -38,7 +38,7 @@ function AuthProvider({ children }) {
 
             // 새로운 인터셉터 등록
             interceptorRef.current = apiClient.interceptors.request.use((config) => {
-                console.log('Intercepting and adding a token');
+                // console.log('Intercepting and adding a token');
                 config.headers.Authorization = storedToken;
                 return config;
             });
@@ -68,7 +68,7 @@ function AuthProvider({ children }) {
 
                 // 새로운 인터셉터 등록
                 interceptorRef.current = apiClient.interceptors.request.use((config) => {
-                    console.log('Intercepting and adding a token');
+                    // console.log('Intercepting and adding a token');
                     config.headers.Authorization = jwtToken;
                     return config;
                 });
