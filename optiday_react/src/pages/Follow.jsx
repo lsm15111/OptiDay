@@ -1,63 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/Follow.css';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFollow, fetchFollow, selectFollowers, selectFollowings, unFollow } from '../redux/slices/followSlice';
-import { AccountSearchApi, followApi, unfollowApi } from '../api/FollowApiService';
+import { addFollow, fetchFollow, selectFollowers, selectFollowings } from '../redux/slices/followSlice';
+import { followApi } from '../api/FollowApi';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AccountSearchApi } from '../api/MemberApi';
+import ProfileModal from '../components/modals/ProfileModal';
 
 
 function Follow(){
     const [selectedTab, setSelectedTab] = useState('follower');
     const dispatch = useDispatch();
+    const followers = useSelector(selectFollowers);
+    const followings = useSelector(selectFollowings);
     useEffect(() => {
         dispatch(fetchFollow());
     }, [dispatch]);
 
 
-    const [followerCount, setFollowerCount] = useState(0);
-    const [followingCount, setFollowingCount] = useState(0);
-
-    const handlefollowerCount = (count) => {
-        setFollowerCount(count);
-    };
-
-    const handlefollowingCount = (count) => {
-        setFollowingCount(count);
-    };
-
     const renderContent = () => {
         switch (selectedTab) {
             case 'follower':
-                return <FollowerComponent followerCount={handlefollowerCount} onMemberClick={handleMemberClick}/>;
+                return <FollowerComponent followers={followers} onMemberClick={handleMemberClick}/>;
             case 'following':
-                return <FollowingComponent followingCount={handlefollowingCount} onMemberClick={handleMemberClick}/>;
+                return <FollowingComponent followings={followings} onMemberClick={handleMemberClick}/>;
             case 'search':
-                return <AccountSearchComponent/>;
+                return <AccountSearchComponent onMemberClick={handleMemberClick}/>;
             default:
-                return <FollowerComponent followerCount={handlefollowerCount} onMemberClick={handleMemberClick}/>;
+                return <FollowerComponent followers={followers} onMemberClick={handleMemberClick}/>;
         }
     };
     const [isProfileModalOpen, setProfileModalOpen] = useState(false);
-    const [selectedMemberProfile, setSelectedMemberProfile] = useState(null);
 
-    const handleMemberClick = async (targetId) => {
-        if(isProfileModalOpen) return;
-        try{
-            const response = await fetchMemberProfile(targetId);
-            if (response.status === 200) {
-                setSelectedMemberProfile(response.data);
-                setProfileModalOpen(true);
-            }
-        }catch(error){
-            alert(error.response.data);
-            console.log(error);
-        }
-        
+    const [targetId, setTargetId] = useState(null);
+    const handleMemberClick = (targetId) => {
+        setTargetId(targetId);
+        setProfileModalOpen(true);
     };
     return (
         <div className='contents'>
             <ProfileModal isOpen={isProfileModalOpen} onClose={() => setProfileModalOpen(false)} 
-                    memberProfile={selectedMemberProfile} />
+                    memberId={targetId} />
             <div className="container-fluid px-4">
                 <div className="row justify-content-center">
                     <div className="bg-white p-4 rounded">
@@ -66,13 +49,13 @@ function Follow(){
                                 onClick={() => setSelectedTab('follower')} 
                                 className={selectedTab === 'follower' ? 'active' : ''}
                             >
-                                팔로워 {followerCount}
+                                팔로워 {followers.length}
                             </button>
                             <button 
                                 onClick={() => setSelectedTab('following')} 
                                 className={selectedTab === 'following' ? 'active' : ''}
                             >
-                                팔로잉 {followingCount}
+                                팔로잉 {followings.length}
                             </button>
                             <button 
                                 onClick={() => setSelectedTab('search')} 
@@ -88,50 +71,6 @@ function Follow(){
                 </div>
             </div>
         </div>
-    );
-};
-
-
-
-// 페이징화 컴포넌트
-// const Pagination = ({ totalPages, currentPage, setCurrentPage }) => {
-//     return (
-//         <div className='pagination'>
-//             {Array.from({ length: totalPages }, (_, index) => (
-//                 <button key={index} onClick={() => setCurrentPage(index + 1)} className={currentPage === index + 1 ? 'active' : ''}>
-//                     {index + 1}
-//                 </button>
-//             ))}
-//         </div>
-//     );
-// };
-// 검색 컴포넌트
-const SearchInput = ({ searchTerm, setSearchTerm }) => {
-    return (
-        <input 
-            type='text' 
-            placeholder='Search by username or email' 
-            value={searchTerm} 
-            onChange={(e) => setSearchTerm(e.target.value)} 
-            style={{ marginBottom: '10px', padding: '5px', width: '100%' }}
-        ></input>
-    );
-};
-// Follow 페이지화 훅
-const usePagination = (items, itemsPerPage) => {
-    const [currentPage, setCurrentPage] = useState(1);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = items.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(items.length / itemsPerPage);
-    return { currentItems, totalPages, currentPage, setCurrentPage };
-};
-
-// Follow 검색 훅
-const useSearch = (items, searchTerm) => {
-    return items.filter(item => 
-        item.username.toLowerCase().includes(searchTerm.toLowerCase())
-        
     );
 };
 
@@ -157,34 +96,28 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     );
 };
 
-const FollowerComponent = ({followerCount}) => {
-
+const FollowerComponent = ({followers, onMemberClick}) => {
     const dispatch = useDispatch();
-    const followers = useSelector(selectFollowers);
-    followerCount(followers.length);
-
     const [currentPage, setCurrentPage] = useState(0);
     const pageSize = 10; // 한 페이지당 보여줄 팔로우 수
-
-    
-
     const handlefollow = async (targetId) => {
         try{
             const response = await followApi(targetId)
-            if(response.status == 200){
+            if(response.status === 200){
                 dispatch(addFollow(targetId));
                 dispatch(fetchFollow());
+                
             }
         }catch(error){
             alert(error.response.data);
         }
     }
+
     const paginatedFollowers = followers.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
     const totalPages = Math.ceil(followers.length / pageSize);
     return (
         <div>
-            {/* <SearchInput searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
-            {followers.length > 1 && (
+            {totalPages > 1 && (
                 <Pagination 
                 currentPage={currentPage} 
                 totalPages={totalPages} 
@@ -192,14 +125,16 @@ const FollowerComponent = ({followerCount}) => {
             />
             )}
             {paginatedFollowers.map(follower => (
-                <div className='follow-item' key={follower.id}>
+                <div className='follow-item' key={follower.id} onClick={()=> onMemberClick(follower.id)}>
                     <div className='profile-image bg-secondary'></div>
                     <div className='username-email'>
                         <div>{follower.username}</div>
                         <div>{follower.message}</div>
                     </div>
                     {follower.status === 'FOLLOWER' && (
-                        <button className='follow-button bg-primary-subtle' onClick={() => handlefollow(follower.id)}>팔로우</button>
+                        <button className='follow-button' onClick={(e) =>{ 
+                            e.stopPropagation(); // 이벤트 버블링 방지
+                            handlefollow(follower.id)}}>팔로우</button>
                     )}
                 </div>
             ))}
@@ -207,15 +142,11 @@ const FollowerComponent = ({followerCount}) => {
     );
 };
 
-const FollowingComponent = ({followingCount}) => {
-    const dispatch = useDispatch();
-    const followings = useSelector(selectFollowings);
-    followingCount(followings.length);
-
+const FollowingComponent = ({followings, onMemberClick}) => {
+    // const dispatch = useDispatch();
     const [currentPage, setCurrentPage] = useState(0);
     const pageSize = 10; // 한 페이지당 보여줄 팔로우 수
-
-    const handleFollow = async (targetId) => {
+/*     const handleFollow = async (targetId) => {
         try {
             const response = await unfollowApi(targetId);
             if (response.status === 200) {
@@ -224,17 +155,17 @@ const FollowingComponent = ({followingCount}) => {
                 
             }
         } catch (error) {
-            alert(error.response.data);
+            console.error("데이터 가져오기 실패",error);
+            // alert(error.response.data);
         }
-    };
+    }; */
 
-    // 현재 페이지에 해당하는 followings 데이터
     const paginatedFollowings = followings.slice(currentPage * pageSize, (currentPage + 1) * pageSize);
     const totalPages = Math.ceil(followings.length / pageSize);
 
     return (
         <div>
-            {followings.length > 1 && (
+            {totalPages > 1 && (
                 <Pagination 
                 currentPage={currentPage} 
                 totalPages={totalPages} 
@@ -242,13 +173,16 @@ const FollowingComponent = ({followingCount}) => {
             />
             )}
             {paginatedFollowings.map(following => (
-                <div className='follow-item' key={following.id}>
+                <div className='follow-item' key={following.id} onClick={()=> onMemberClick(following.id)}>
                     <div className='profile-image bg-secondary'></div>
                     <div className='username-email'>
                         <div>{following.username}</div>
                         <div>{following.message}</div>
                     </div>
-                    <button className='follow-button bg-primary-subtle' onClick={() => handleFollow(following.id)}>언팔로우</button>
+                    {/* <button className='unfollow-button' onClick={(e) => {
+                        e.stopPropagation(); // 이벤트 버블링 방지
+                        handleFollow(following.id)
+                    }}>언팔로우</button> */}
                 </div>
             ))}
             
@@ -256,7 +190,7 @@ const FollowingComponent = ({followingCount}) => {
     );
 };
 
-const AccountSearchComponent = () => {
+const AccountSearchComponent = ({onMemberClick}) => {
     const [members, setMembers] = useState([]); // 멤버 데이터
     const [page, setPage] = useState(0);
     const [totalPages, setTotalPages] = useState(0);
@@ -267,7 +201,6 @@ const AccountSearchComponent = () => {
             const response = await AccountSearchApi(newPage,pageSize,search);
             if(response.status === 200){
                 const data = response.data;
-                console.log("response Data",data)
                 setMembers(data.content); // 멤버 데이터 저장
                 setTotalPages(data.totalPages);
                 setPage(newPage);
@@ -277,19 +210,12 @@ const AccountSearchComponent = () => {
             }
         } catch (error) {
             console.error("데이터 가져오기 실패", error);
-        } finally {
         }
     };
-    
 
     useEffect(() => {
         fetchMembers();
     }, [page]);
-
-
-    const handleMemberClick = (memberId) => {
-        console.log(memberId);
-    };
 
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
@@ -320,8 +246,9 @@ const AccountSearchComponent = () => {
                 onPageChange={setPage} 
             />
             )}
+            <div className='account-list-container'>
             {members.length > 0 ? members.map(member => (
-                <div className='follow-item' key={member.id} onClick={handleMemberClick(member.id)}>
+                <div className='follow-item' key={member.id} onClick={() => onMemberClick(member.id)}>
                 <div className='profile-image bg-secondary'></div>
                 <div className='username-email'>
                     <div>{member.username}</div>
@@ -329,7 +256,7 @@ const AccountSearchComponent = () => {
                 </div>
                 </div>
             )):(<div className=' text-center p-2 justify-content-center align-items-center'>검색 결과가 없습니다.</div>)}
-            
+            </div>
             {/* {totalPages > 1 && <Pagination totalPages={totalPages} currentPage={currentPage} setCurrentPage={setCurrentPage} />} */}
         </div>);
 }
