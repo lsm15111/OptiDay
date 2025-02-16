@@ -38,7 +38,7 @@ public class Todo {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
-    private boolean isCompleted=false;
+    private boolean isCompleted = false;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id",nullable = false)
@@ -65,15 +65,5 @@ public class Todo {
         this.category = category;
     }
 
-    @Override
-    public String toString() {
-        return "Todo{" +
-                "isCompleted=" + isCompleted +
-                ", endDate=" + endDate +
-                ", startDate=" + startDate +
-                ", description='" + description + '\'' +
-                ", title='" + title + '\'' +
-                ", id=" + id +
-                '}';
-    }
+
 }
