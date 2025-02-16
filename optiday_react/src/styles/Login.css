@@ -21,15 +21,20 @@
     align-items: center;
     justify-content: center;
 }
-.login-button:hover,.signup-button:hover {
-    background-color: #2C2C2C;
-}
+
 .login-button{
     background-color: #485db8;
     font-weight: bold;
-    
+    border-radius: 3px;
+}
+.login-button:hover{
+    background-color: #394c9e;
 }
 .signup-button{
     background-color: rgb(224, 224, 224);
     font-weight: bold;
+    border-radius: 3px;
+}
+.signup-button:hover {
+    background-color: #464646;
 }

@@ -1,0 +1,22 @@
+.feedback-todoitem-date{
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.6);
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    text-align: left;
+}
+.feedback-todoitem-description{
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.6);
+    font-family: Arial, sans-serif;
+    text-decoration: none;
+    text-align: left;
+}
+.todoitem-container{
+    cursor: pointer;
+}
+.todoitem-active {
+    border: 2px solid #9b9b9b;
+    box-shadow: 0 0 8px rgba(146, 146, 146, 0.5); 
+    opacity: 0.7;
+}

@@ -1,0 +1,127 @@
+.container {
+    max-width: 600px; /* 최대 너비 설정 */
+    margin: auto; /* 중앙 정렬 */
+}
+.list-group {
+    width: 300px;
+    min-width: 200px;
+    max-width: 500px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.list-group-item {
+    transition: background-color 0.3s; /* 배경색 전환 효과 */
+}
+
+.list-group-item:hover {
+    background-color: #f8f9fa; /* 호버 시 배경색 변경 */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+}
+
+.mt-2 {
+    margin-top: 0.5rem; /* 마진 추가 */
+}
+
+.status-upcoming {
+    color: #28a745; /* 초록색 */
+}
+
+.status-completed {
+    color: #000000; /* 빨간색 */
+    opacity: 0.5;
+}
+.feedback-title{
+    font-size: 18px;
+    font-weight: bold;
+    padding: 8px;
+    border-radius: 10px;
+}
+.feedback-board{
+    background-color: rgb(230, 230, 230); 
+    margin: 10px;
+    min-width: 500px;
+    border-radius: 10px;
+}
+
+.selected-todo-info{
+    min-width: 400px;
+    border-radius: 10px
+}
+.feedback-board-container{
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px;
+    height: 522px;
+    background-color:  rgb(240, 240, 240);
+}
+.comments-list {
+    border-top: 1px solid #ccc;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+
+.comment {
+background-color: #f1f1f1;
+border-radius: 5px;
+padding: 5px;
+margin: 5px 0;
+}
+
+.feedback-comment-button{
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #dddddd;
+    border: none;
+    cursor: pointer;
+}
+.feedback-comment-button:hover{
+    background-color: #adadad;
+}
+.feedback-comment-input{
+    margin: 5px;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #ffffff;
+    border: 2px solid #585858;
+}
+.feedback-myboard-button{
+    padding: 8px;
+    border-radius: 10px;
+    color: #ffffff;
+    background-color: #343a40;
+    border: none;
+    cursor: pointer;
+    margin-right: 10px;
+}
+.feedback-myboard-button:hover{
+    background-color: #2c3034;
+}
+.feedback-line{
+    height: 6px;
+    margin: 2px;
+}
+.feedback-board-button{
+    background-color:#ccc;
+    border-radius: 10px;
+    padding: 5px;
+    padding-left: 10px;
+    padding-right: 10px;
+    margin:5px;
+    font-weight: bold;
+}
+.feedback-board-button:hover{
+    background-color: #adadad;
+}
+.feedback-following-container{
+    border-radius: 8px;
+    height: 40px;
+    align-items: center;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.1);
+    background-color: #f1f1f1;
+
+}
+.feedback-board-title-container{
+    padding:5px;
+}

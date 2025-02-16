@@ -114,3 +114,31 @@
 .day:hover {
     transform: scale(1.02);
 }
+
+@media (max-width: 1000px) {
+    .day {
+        min-width: 100px;
+        min-height: 100px;
+    }
+    .event {
+        font-size: 12px;
+        padding: 4px;
+    }
+    .date-number {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 800px) {
+    .day {
+        min-width: 80px;
+        min-height: 80px;
+    }
+    .event {
+        font-size: 10px;
+        padding: 2px;
+    }
+    .date-number {
+        font-size: 10px;
+    }
+}
