@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { retrieveMessageApi } from '../../api/MemberApiService';
+import { retrieveMessageApi } from '../../api/MemberApi';
 
 export const fetchMessage = createAsyncThunk("retrieveMessageApi", async () => {
     const response = await retrieveMessageApi();

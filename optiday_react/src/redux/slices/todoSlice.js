@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { retrieveTodosApi } from '../../api/TodoApiService';
+import { retrieveTodosApi } from '../../api/TodoApi';
 
 
     export const fetchTodos = createAsyncThunk("retrieveTodosApi", async () => {

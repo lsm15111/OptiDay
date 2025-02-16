@@ -1,9 +1,8 @@
 import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit";
-import { retrieveFollowApi } from "../../api/FollowApiService";
+import { retrieveFollowApi } from "../../api/FollowApi";
 
 export const fetchFollow = createAsyncThunk("retrieveFollow", async () =>{
     const res = await retrieveFollowApi();
-    console.log("fetchFollow",res.data);
     return res.data;
 
 });
@@ -18,6 +17,7 @@ export const selectFollowings = createSelector(
     (follows) => follows.filter(follow => follow.status === 'FOLLOWING' || follow.status === 'MUTUAL')
 );
 
+
 const followSlice = createSlice({
     name: "follow",
     initialState: { 
@@ -25,14 +25,17 @@ const followSlice = createSlice({
     },
     reducers: {
         addFollow: (state, action) => {
-            const followId = action.payload;
-            const follow = state.follows.find(f => f.id === followId);
-            follow.state = 'MUTUAL'; // 팔로우 상태 업데이트
+            const follow = action.payload;
+            const followIndex = state.follows.findIndex(f => f.id === follow.id);
+            if(followIndex === -1) {
+                state.follows.push(follow);
+                return;
+            }
+            state.follows[followIndex] = { ...state.follows[followIndex], ...follow, };
         },
         unFollow: (state, action) => {
             const followId = action.payload;
             const followIndex = state.follows.findIndex(f => f.id === followId);
-
             if (followIndex !== -1) {
                 const follow = state.follows[followIndex];
                 if (follow.state === 'MUTUAL') {
@@ -43,22 +46,14 @@ const followSlice = createSlice({
                         ...state.follows.slice(followIndex + 1),
                     ]; // 배열에서 삭제
                 }
+            }else {
+                console.log("Follow ID not found:", followId);
             }
-        },
-        updateFollow: (state, action) => {
-            const updatedData = action.payload;
-            console.log("updateFollow Action",updatedData);
-            // console.log(action);
-            // const todoIndex = state.todos.findIndex(todo => todo.id === updatedData.id);
-            // if(todoIndex !== -1) {
-            //     state.todos[todoIndex] = { ...state.todos[todoIndex], ...updatedData };
-            // }
         }
     },
     extraReducers: (builder) => {
         builder
             .addCase(fetchFollow.fulfilled, (state, action) => {
-                console.log("Action PayLoad",action.payload);
                 state.follows = action.payload;
             })
     },
