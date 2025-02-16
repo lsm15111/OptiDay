@@ -26,10 +26,9 @@ function formatDateToYYYYMMDD(date) {
     return `${year}-${month}-${day}`;
 }
 
-function Calendar() {
+function Calendar(){
     const todos = useSelector(state => state.todos.todos);
     const categories = useSelector(state => state.categories.categories);
-
     const [currentDate, setCurrentDate] = useState(new Date());
     const [modalOpen, setModalOpen] = useState(false);
     const [filterDate, setFilterDate] = useState([]);
@@ -59,15 +58,23 @@ function Calendar() {
     const daysOfWeek = ['일', '월', '화', '수', '목', '금', '토'];
 
     function renderDays(){
+        // 각 todo의 일수 계산 후 정렬
+    const sortedTodos = todos
+    .map(todo => {
+        const startDate = new Date(todo.startDate);
+        const endDate = new Date(todo.endDate);
+        const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)); // 일수 계산
+        return { ...todo, duration }; // todo에 duration 추가
+    })
+    .sort((a, b) => b.duration - a.duration); // 긴 일정이 위에 오도록 정렬
         return monthDates.map((date, index) => {
             const isSunday = date && new Date(date).getDay() === 0; // Check if the day is Sunday
             const formattedDate = date ? formatDateToYYYYMMDD(date) : null;
-
             return (
                 <div key={index} className={`day ${isSunday ? 'sunday' : ''}`} onClick={() => date && handleDayClick(date)}>
                     {date && <div className="date-number" style={{ color: isSunday ? '#FF9999' : '#444' }}>{date.getDate()}</div>}
                     <div className='pt-3' style={{ maxHeight: '100px' }}>
-                        {formattedDate && todos
+                        {formattedDate && sortedTodos
                             .filter(todo => formattedDate >= todo.startDate && formattedDate <= todo.endDate)
                             .map((todo, todoIdx) => {
                                 const eventColor = Array.isArray(categories) ? categories.find(category => category.id === todo.categoryId)?.color : '#ddd';
