@@ -9,6 +9,7 @@ function Todoslist({username}){
     const [todoItem, setTodoItem] = useState(null);
     //오늘 날짜
     const today = new Date().toISOString().split('T')[0]; 
+    // console.log(today);
     //오늘 일정 filter -> todayTodos
     const todayTodos = todos.filter(todo => todo.startDate.split('T')[0] <= today&& todo.endDate.split('T')[0] >= today); 
     const handleItem = (id) => {
@@ -25,7 +26,7 @@ function Todoslist({username}){
         <div className="todolist-container">
             <div className="today-text new-style">하루 일정</div>
             <div className="Todoslist scrollbar" >
-                <DailyTodoModal  todo={todoItem} isOpen={modalOpen} onClose={closeModal} username={username}/>
+                {/* <DailyTodoModal  todo={todoItem} isOpen={modalOpen} onClose={closeModal} username={username}/> */}
                 {todayTodos.length === 0 ? (
                 <div className="p-2 no-todos">
                         일정이 없습니다

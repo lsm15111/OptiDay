@@ -13,12 +13,16 @@ function Headerbar(){
     const inputRef = useRef(null);
     const {logout} = useAuth(); 
     const message = useSelector(state => state.message.message);
-    
 
     const handleFocus = () => {
         setIsSearchActive(true);
         inputRef.current.focus();
     };
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(fetchMessage());
+        console.log("Headerbar")
+    },[dispatch])
 
     const handleBlur = () => {
         setTimeout(() => {
@@ -36,7 +40,6 @@ function Headerbar(){
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
-    
     return(
             <div className="headerbar bg-white headerbar-height">
                 <div className="row ms-2 me-2 headerbar-container">
@@ -51,7 +54,7 @@ function Headerbar(){
                         </div>
                         <div className="headerbar-right">
                             <div className={`right-menu ${isMenuOpen ? 'show' : ''}`}>
-                                <div className="search-container">
+                                {/* <div className="search-container">
                                     <input 
                                         type="text" 
                                         className={`search-input ${isSearchActive ? 'active' : ''}`}
@@ -67,7 +70,7 @@ function Headerbar(){
                                     >
                                         <Search size={20}/>
                                     </button>
-                                </div>
+                                </div> */}
                                 <Link className="nav-link headerbar-link" style={{ fontSize: '18px' }} onClick={handleLogout} to="/login">Logout</Link>
                                 <Link className="nav-link headerbar-link" style={{ fontSize: '18px' }} to="/mypage">Profile</Link>
                             </div>
