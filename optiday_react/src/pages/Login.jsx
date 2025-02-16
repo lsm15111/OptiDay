@@ -37,17 +37,17 @@ function Login(){
                     <div className="mb-3">
                         <input type="text" className="form-control form-control-lg" 
                                 name='username' value={username} onChange={(e) => setUsername(e.target.value)}
-                        placeholder="ID"/>
+                        placeholder="Email"/>
                     </div>
                     <div className="mb-3">
                         <input type="password" className="form-control form-control-lg" 
                                 name='password' value={password} onChange={(e) => setPassword(e.target.value)}
-                        placeholder="비밀번호"/>
+                        placeholder="Password"/>
                     </div>
                 </form>
                 <div className='mb-3 '/>
                 {/* 로그인 버튼 */}
-                <button className='btn login-button w-100 py-2 mb-3' name='login' onClick={handleSubmit} >로그인</button>
+                <button className='login-button w-100 py-2 mb-3' name='login' onClick={handleSubmit} >로그인</button>
                 {/* <div className="d-flex justify-content-center gap-4 mb-4">
                     <a href="/" className="icon-button" >
                         <img src="https://placehold.co/24x24" alt="Google icon"/>
@@ -59,10 +59,10 @@ function Login(){
                         <img src="https://placehold.co/24x24" alt="KakaoTalk icon"/>
                     </a>
                 </div> */}
-                {Error && <div className='fw-semibold'>인증 실패</div>}
+                {Error && <div className='fw-semibold mb-1'>인증 실패</div>}
                 
                 {/* 회원 가입 버튼 */}
-                <Link to={"/signup"} className="btn signup-button w-100 ">회원가입</Link>
+                <Link to={"/signup"}><button className='signup-button w-100 py-2'>회원가입</button></Link>
             </div>
         </div>
     )
