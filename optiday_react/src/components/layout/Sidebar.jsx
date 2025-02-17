@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, ChartColumn, House, UserRound } from "lucide-react";
+import { Calendar, ChartColumn, UserRound } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import '../../styles/Sidebar.css';
 
@@ -13,14 +13,14 @@ function Sidebar() {
                 to={`/main`}
                 className={`sideicon ${currentPath === `/main` ? 'active' : ''}`}
             >
-                <House size={30} className="text-white" />
+                <Calendar size={30} className="text-white" />
             </Link>
-            <Link 
+            {/* <Link 
                 to={'/month'} 
                 className={`sideicon ${currentPath === '/month' ? 'active' : ''}`}
             >
                 <Calendar size={30} className="text-white" />
-            </Link>
+            </Link> */}
             <Link 
                 to={'/feedback'} 
                 className={`sideicon ${currentPath === '/feedback' ? 'active' : ''}`}
