@@ -1,5 +1,6 @@
 package com.optiday_min.optiday.controller;
 
+import com.optiday_min.optiday.dto.CommentResponse;
 import com.optiday_min.optiday.dto.TodoRequest;
 import com.optiday_min.optiday.dto.TodoResponse;
 import com.optiday_min.optiday.domain.Todo;
@@ -68,6 +69,12 @@ public class TodoController {
                                     @PathVariable Long todoId){
         userService.getMemberIdForToken(token);
         todoService.deleteTodo(todoId);
+    }
+
+    @GetMapping("{todoId}/comments")
+    public ResponseEntity<List<CommentResponse>> retrieveCommentsByTodoId(@PathVariable Long todoId){
+        List<CommentResponse> comments = todoService.getCommentByTodoId(todoId);
+        return ResponseEntity.ok(comments);
     }
 
 }
