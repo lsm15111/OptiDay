@@ -6,6 +6,8 @@ import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class AccountDeleteRequest {
     @NotBlank(message = "이메일은 필수 입력값 입니다")
     @Email(message = "이메일 형식이어야 합니다")
