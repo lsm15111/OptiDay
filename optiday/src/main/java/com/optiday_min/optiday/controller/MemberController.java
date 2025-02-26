@@ -6,6 +6,8 @@ import com.optiday_min.optiday.service.MemberService;
 import com.optiday_min.optiday.domain.Member;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/members")
 public class MemberController {
 
+    private final static Logger logger = LoggerFactory.getLogger(MemberController.class);
     private final MemberService memberService;
     private final UserService userService;
 
@@ -48,12 +51,11 @@ public class MemberController {
     }
 
     // 사용자 삭제
-    @DeleteMapping
-    public ResponseEntity<String> deleteMember(@RequestHeader("Authorization") String token
-                                               , @RequestBody AccountDeleteRequest accountDeleteRequest) {
+    @PostMapping("/delete")
+    public void deleteMember(@RequestHeader("Authorization") String token
+                                               , @RequestBody(required = false) AccountDeleteRequest accountDeleteRequest) {
         Long memberId = userService.getMemberIdForToken(token);
         memberService.deleteAccount(memberId, accountDeleteRequest);
-        return ResponseEntity.ok("회원 탈퇴가 완료되었습니다.");
     }
 
     // 내 프로필 조회
