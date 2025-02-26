@@ -23,6 +23,7 @@ public class Member {
     private Long id;
     @NotBlank(message = "이름은 필수 입력 값입니다.")
     @Size(min=2, max=10, message = "이름은 2~10자까지 입력가능합니다.")
+    @Column(unique = true)
     private String username;
     @Size(max=15, message = "메세지는 15자까지 입력가능합니다.")
     private String message;
@@ -57,6 +58,7 @@ public class Member {
     @JsonIgnore
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Follow> followers = new ArrayList<>();
+
 
     @Override
     public String toString() {
