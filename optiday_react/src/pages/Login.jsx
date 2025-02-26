@@ -8,8 +8,8 @@ import { fetchMessage } from '../redux/slices/messageSlice';
 import { fetchTodos } from '../redux/slices/todoSlice';
 
 function Login(){
-    const [username, setUsername] = useState('min');
-    const [password, setPassword] = useState('min');
+    const [username, setUsername] = useState('');
+    const [password, setPassword] = useState('');
     const [Error, setError] = useState(false)
     const navigate = useNavigate()
     const {login} = useAuth()
@@ -37,12 +37,12 @@ function Login(){
                     <div className="mb-3">
                         <input type="text" className="form-control form-control-lg" 
                                 name='username' value={username} onChange={(e) => setUsername(e.target.value)}
-                        placeholder="Email"/>
+                        placeholder="Email" autoComplete="email"/>
                     </div>
                     <div className="mb-3">
                         <input type="password" className="form-control form-control-lg" 
                                 name='password' value={password} onChange={(e) => setPassword(e.target.value)}
-                        placeholder="Password"/>
+                        placeholder="Password" autoComplete="current-password"/>
                     </div>
                 </form>
                 <div className='mb-3 '/>
@@ -62,7 +62,7 @@ function Login(){
                 {Error && <div className='fw-semibold mb-1'>인증 실패</div>}
                 
                 {/* 회원 가입 버튼 */}
-                <Link to={"/signup"}><button className='signup-button w-100 py-2'>회원가입</button></Link>
+                <button className='signup-button w-100 py-2' onClick={()=> navigate("/signup")}>회원가입</button>
             </div>
         </div>
     )

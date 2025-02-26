@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Signup.css";
 import { Link, useNavigate } from "react-router-dom";
-import { signupApi } from "../api/MemberApiService";
+import { signupApi } from "../api/MemberApi";
 
 const Signup = () => {
   const [formData, setFormData] = useState({ // name, password, email, phone만 전송
@@ -150,8 +150,9 @@ const Signup = () => {
                     onChange={handleChange}
                     placeholder="이메일"
                     className={errors.email ? 'error' : ''}
+                    style={{ width: "300px"}}
                   />
-                  <button 
+                  {/* <button 
                     type="button" 
                     className="verification-button"
                     onClick={handleVerificationRequest}
@@ -173,7 +174,7 @@ const Signup = () => {
                         확인
                       </button>
                     </>
-                  )}
+                  )} */}
                   {errors.email && <div className="error-message">{errors.email}</div>}
                 </div>
               </div>
@@ -187,6 +188,7 @@ const Signup = () => {
                     value={formData.password}
                     onChange={handleChange}
                     placeholder="비밀번호"
+                    autoComplete="new-password"
                     className={errors.password ? 'error' : ''}
                   />
                   <span className="input-hint">6~20자</span>
@@ -264,7 +266,7 @@ const Signup = () => {
                   <input className="mb-3 m-2" type="checkbox" id="reference3" name="reference" value="광고" />
                   <label htmlFor="reference3">광고</label>
                   <input className="mb-3 m-2" type="checkbox" id="reference4" name="reference" value="기타" />
-                  <label htmlFor="reference4">기타 - 내가만듬</label>
+                  <label htmlFor="reference4">기타</label>
                 </div>
               </div>
             </div>
