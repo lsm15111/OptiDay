@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import '../styles/Mypage.css';
-import { retrieveProfileApi, updateProfileApi } from "../api/MemberApiService";
+import { retrieveProfileApi, updateProfileApi } from "../api/MemberApi";
 import DateSelector from "../components/DateSelector";
 import { useDispatch } from "react-redux";
 import { setMessage } from "../redux/slices/messageSlice";
+import DeleteAccountModal from "../components/modals/DeleteAccountModal";
 
 function Mypage() {
     const defaultProfileImg = '/images/user_default.png'; // default image URL (정적)
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const dispatch = useDispatch();
     useEffect(() => {
         const fetchUserData = async () => {
@@ -65,10 +67,8 @@ function Mypage() {
         const isValid = handleFieldSave(['username', 'birthDate', 'phone']);
         if (isValid) {
             const response = await updateProfileApi(userData);
-            // console.log('Response data:', response);
-            // console.log(response.status)
             if (response.status === 200) {
-                
+                // console.log('저장된 데이터:', userData);
                 dispatch(setMessage(userData.message));
                 alert('프로필 수정 완료');
             } else if(response.status === 400){
@@ -124,9 +124,6 @@ function Mypage() {
             }
         }
 
-        if (isValid) {
-            console.log('저장된 데이터:', userData);
-        }
         return isValid;
     };
 
@@ -159,6 +156,9 @@ function Mypage() {
         }));
     };
 
+    const handleAccountDelete = () => {
+        
+    }
     return (
         <div className="contents">
             <div className="container-fluid" style={{ maxWidth: '1000px', margin: '0 auto' }}>
@@ -192,10 +192,11 @@ function Mypage() {
                                         accept="image/*" 
                                         onChange={handleImageChange} 
                                     />
-                                    <button 
+                                    {isEditing && (<button 
                                         onClick={setToDefaultImage} 
                                         className="btn btn-secondary mt-1 profile-default-button"
                                     >기본 이미지로 변경</button>
+                                    )}
                                 </div>
                             </div>
                             <div className=" col-md-8 m-auto"> 
@@ -237,10 +238,8 @@ function Mypage() {
                                         {userData.message}
                                     </div>
                                 )}
-                                <div className="text-body-secondary">
-                                    {userData.email}
-                                </div>
-                                <p className="mt-2 text-muted">
+                                
+                                <p className=" text-muted default-item">
                                     팔로워 {userData.followers} 팔로잉 {userData.following}
                                 </p>
                                 
@@ -311,7 +310,7 @@ function Mypage() {
                             </div>
                         </section>
                         {/* 개인 설정 레이어 */}
-                        {/* <section className="mt-5">
+                        <section className="mt-4 p-5">
                             <h3 className="section-title text-start">개인 설정</h3>
                             <div className="section-content">
                                 <div className="settings-item">
@@ -320,10 +319,26 @@ function Mypage() {
                                             <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
                                         </div>
                                 </div>
+                                <div className="settings-item">
+                                    <span>공개</span>
+                                        <div className="form-check form-switch">
+                                            <input className="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckChecked" />
+                                        </div>
+                                </div>
                             </div>
-                        </section> */}
+                        </section>
                         
-                        
+                            <div className="mt-5 text-end">
+                                {/* <button onClick={() => 비밀번호 변경로직} className="btn btn-secondary me-2">
+                                    비밀번호 변경
+                                </button> */}
+                                <button onClick={() => setIsModalOpen(true)} className="btn btn-danger">계정 삭제</button>
+                            </div>
+
+                            <DeleteAccountModal
+                                isOpen={isModalOpen}
+                                onClose={() => setIsModalOpen(false)}
+                            />
                         <div className="d-flex justify-content-center mt-4">
                             {!isEditing ? (
                                 <button className="btn btn-primary" onClick={handleEdit}>수정</button>
@@ -335,14 +350,7 @@ function Mypage() {
                                 </div>
                             )}
                         </div>
-                        {isEditing && (
-                            <div className="mt-5 text-end">
-                                <button onClick={() => {/* 비밀번호 변경 로직 */}} className="btn btn-secondary me-2">
-                                    비밀번호 변경
-                                </button>
-                                <button onClick={() => {/* 계정 삭제 로직 모든 관계수정 */}} className="btn btn-danger">계정 삭제</button>
-                            </div>
-                        )}
+                        
 
                     </div>
                 </div>
