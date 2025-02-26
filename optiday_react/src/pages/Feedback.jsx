@@ -7,7 +7,8 @@ import { fetchTodos } from "../redux/slices/todoSlice";
 import { fetchCategories } from "../redux/slices/categorySlice";
 import { retrieveTodosForFollowingApi } from "../api/TodoApi";
 import Categorylist from "../components/Categorylist";
-import { retrieveCommentApi } from "../api/CommentApi";
+import { createCommentApi, deleteCommentApi, retrieveCommentApi } from "../api/CommentApi";
+import { Edit, Trash2 } from "lucide-react";
 
 function Feedback() {
   const [selectedTodo, setSelectedTodo] = useState(null);
@@ -22,8 +23,10 @@ function Feedback() {
 
   const handleToggle = async (todo, eventColor) => {
     const response = await retrieveCommentApi(todo.id);
-    console.log(response);
-
+    // console.log(response);
+    if(response.status === 200){
+      setComments(response.data);
+    }
     setCategoryColor(eventColor);
     setSelectedTodo(selectedTodo === todo ? null : todo);
   };
@@ -65,20 +68,38 @@ function Feedback() {
     }
   }, [selectedUserTodos, todos]); // selectedUserTodos 또는 todos가 변경될 때마다 실행
 
-  const handleCommentSubmit = (e) => {
+  const handleCommentSubmit = async (e) => {
     e.preventDefault();
     const commentInput = e.target.elements.comment.value;
     if (commentInput) {
-      setComments([...comments, commentInput]);
-      e.target.reset();
+      // console.log(commentInput);
+      const requestBody = {
+        comment: commentInput, // CommentRequest의 content 필드와 매핑
+      };
+      const response = await createCommentApi(selectedTodo.id,requestBody);
+      if(response.status === 200){
+        setComments([...comments, response.data]);
+        e.target.reset();
+      }
     }
   };
+  // const handleCommentUpdate = async (e) => {
+  // };
+  const handleCommentDelete = async (commentId) => {
+    const response = await deleteCommentApi(selectedTodo.id,commentId);
+    if(response.status === 200){
+      const updatedComments = comments.filter((comment) => comment.id!==commentId);
+      setComments(updatedComments);
+    }
+    // console.log(response);
+
+  }
 
   const handleUserClick = async (followingId) => {
 
     const response = await retrieveTodosForFollowingApi(followingId);
     if(response.status === 200){
-      console.log(response)
+      // console.log(response)
       if(response.data.length === 0){
         alert("해당 유저의 일정이 없습니다.")
         return;
@@ -92,6 +113,7 @@ function Feedback() {
     setSelectedUserTodos(todos); // 내 todos 설정
     setSelectedTodo(null); // 선택된 todo 초기화
   };
+
 
   return (
     <div className="contents">
@@ -110,7 +132,12 @@ function Feedback() {
         </div>
         <div className="d-flex feedback-board-container">
           <ul className="list-group">
-          {sortedTodos.map((todo) => {
+          {sortedTodos.length===0 ?(
+            <h6 className="m-2">
+              등록된 일정이 없습니다.
+            </h6>
+              ):
+            (sortedTodos.map((todo) => {
               const eventColor = Array.isArray(categories) ? categories.find(category => category.id === todo.categoryId)?.color : '#ddd';
               return (
                 <TodoItem
@@ -122,7 +149,8 @@ function Feedback() {
                   eventColor={eventColor}
                 />
               );
-            })}
+            }))
+            }
           </ul>
           {selectedTodo && (
             <div className={`selected-todo-info m-3`} >
@@ -132,22 +160,38 @@ function Feedback() {
               </div>
               <p className="feedback-todoitem-date">{selectedTodo.startDate} ~ {selectedTodo.endDate}</p>
               <p className="feedback-todoitem-description">설명: {selectedTodo.description}</p>
-              <form onSubmit={handleCommentSubmit}>
+              <form onSubmit={handleCommentSubmit} className="feedback-comment-formcontainer d-flex">
                 <input type="text" className="feedback-comment-input" name="comment" placeholder="" required />
-                <button type="submit" className="feedback-comment-button">댓글 추가</button>
+                <button type="submit" className="feedback-comment-button">등록</button>
               </form>
               <div className="comments-list mt-2">
                 {comments.map((comment, index) => (
-                  <p key={index} className="comment">{comment}</p>
+                  <div key={index} className="comment d-flex">
+                    <div>
+                    <div className="feedback-comment">
+                    {comment.comment}
+                    </div>
+                    <div style={{ fontSize: "0.9em", color: "#666", marginTop: "4px" }}>
+                      <span style={{ fontWeight: "bold", color: "#222" }}>{comment.username}</span>
+                      <span> | </span>
+                      <span>{comment.createdAt.split("T")[0]} {comment.createdAt.split("T")[1].split(".")[0]}</span>
+                    </div>
+                    </div>
+                    {comment.owner && (
+                      <div className="m-auto">
+                        {/* <Edit type="submit" className="btn-edit me-2" onClick={handleCommentUpdate}>수정</Edit> */}
+                        <Trash2 type="submit" className="btn-delete" onClick={() => {handleCommentDelete(comment.id)}}>삭제</Trash2>
+                      </div>
+                    )}
+                  </div>
+
                 ))}
               </div>
             </div>
           )}
         </div>
       </div>
-      <div>
-        <Categorylist/>
-      </div>
+      
     </div>
   );
 }
