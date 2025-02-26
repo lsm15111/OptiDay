@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../../styles/TodoModal.css';
 import { Check, X } from 'lucide-react';
-import { createTodoApi } from '../../api/TodoApiService';
+import { createTodoApi } from '../../api/TodoApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { addTodo } from '../../redux/slices/todoSlice';
 
@@ -29,7 +29,6 @@ const TodoModal = ({ isOpen, onClose }) => {
             alert("시작일은 종료일보다 이전이어야 합니다.");
             return; // 검증 실패 시 함수 종료
         }
-
         if(todo.categoryId === 'none') todo.categoryId=null;
         event.preventDefault(); // 폼 제출 시 기본 동작 방지
         try {
@@ -116,9 +115,9 @@ const TodoModal = ({ isOpen, onClose }) => {
                     <input type="time" name="startTime" className='form-control w-25'></input>
                     <input type="time" name="endTime" className='form-control w-25'></input>
                 </div> */}
-                <div className="form-group">
-                    <label>카테고리</label>
-                    <select className="form-control" name="categoryId" value={todo.categoryId} onChange={handleInputChange}>
+                <div className="form-group d-flex">
+                    <label className='mt-2 me-2'>카테고리</label>
+                    <select className="form-control w-25" name="categoryId" value={todo.categoryId} onChange={handleInputChange}>
                         <option value='none'>카테고리 선택</option>
                         {categories&& categories.map(category => (
                             <option key={category.id} value={category.id} style={{ color: category.color, fontWeight: 'bold' }}>
