@@ -37,7 +37,7 @@ public class FollowController {
     }
     
     // 팔로우 A 가 B를 추가
-    @PostMapping("/{targetId}")
+    @PostMapping("/follow/{targetId}")
     public ResponseEntity<FollowResponse> follow(@RequestHeader("Authorization") String token,
                                          @PathVariable Long targetId) {
         Long memberId = userService.getMemberIdForToken(token);
@@ -47,7 +47,7 @@ public class FollowController {
     }
 
     // 언팔로우
-    @DeleteMapping("/{targetId}")
+    @DeleteMapping("/unfollow/{targetId}")
     public ResponseEntity<String> unfollow(@RequestHeader("Authorization") String token,
                                            @PathVariable Long targetId) {
         Long memberId = userService.getMemberIdForToken(token);
