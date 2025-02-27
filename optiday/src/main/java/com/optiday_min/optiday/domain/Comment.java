@@ -37,9 +37,10 @@ public class Comment {
     @JsonBackReference
     private Member member;
 
-    public Comment(String comment, Todo todo) {
+    public Comment(String comment, Todo todo, Member member) {
         this.comment = comment;
         this.todo = todo;
+        this.member = member;
     }
 
     // 테이블 생성될때 댓글 날짜 생성
