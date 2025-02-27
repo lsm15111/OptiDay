@@ -43,8 +43,7 @@ public class CategoryService {
     }
 
     public Category updateCategory(CategoryRequest categoryRequest, Long memberId, Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+        Category category = getCategoryById(categoryId);
 
         // token - category 소유 체크
         if(!Objects.equals(category.getMember().getId(), memberId)){
@@ -57,10 +56,28 @@ public class CategoryService {
     }
 
     public void removeCategory(Long memberId,Long categoryId) {
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new UsernameNotFoundException("Category not found"));
+        Category category = getCategoryById(categoryId);
         // 카테고리에 속한 todos 가져와서 category=null 설정
         todoService.removeCategoryFromTodos(category);
         categoryRepository.deleteById(categoryId);
     }
+
+    public Category updateNameForCategory(Long categoryId, String rename) {
+        Category category = getCategoryById(categoryId);
+        category.setName(rename);
+        return categoryRepository.save(category);
+    }
+
+    public Category updateColorForCategory(Long categoryId, String color) {
+        Category category = getCategoryById(categoryId);
+        category.setColor(color);
+        return categoryRepository.save(category);
+    }
+
+    private Category getCategoryById(Long categoryId) {
+        return categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new EntityNotFoundException("Category not found"));
+    }
+
+
 }
