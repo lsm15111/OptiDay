@@ -21,7 +21,7 @@ public class Category {
     private Long id;
 
     @NotBlank(message = "카테고리 이름은 필수 입력값입니다.")
-    @Size(max = 10, message = "카테고리 이름은 10자까지 입력가능합니다.")
+    @Size(max = 5, message = "카테고리 이름은 5자까지 입력가능합니다.")
     private String name; //카테고리 이름
 
     @NotBlank(message = "색상은 필수 입력값입니다.")
