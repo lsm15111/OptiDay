@@ -27,6 +27,13 @@ const categorySlice = createSlice({
         addCategories: (state, action) => {
             state.categories = [...state.categories, ...action.payload]; // 여러 개 추가
         },
+        updateCategoryName: (state, action) => {
+            const { id, name } = action.payload;
+            const category = state.categories.find((cat) => cat.id === id);
+            if (category) {
+                category.name = name;
+            }
+        },
         updateCategoryColor: (state, action) => {
             const { id, color } = action.payload;
             const category = state.categories.find((cat) => cat.id === id);
@@ -43,6 +50,6 @@ const categorySlice = createSlice({
     },
 });
 
-export const { setCategories, addCategory,addCategories, deleteCategory, updateCategoryColor } = categorySlice.actions;
+export const { setCategories, addCategory,addCategories, deleteCategory, updateCategoryName, updateCategoryColor } = categorySlice.actions;
 export default categorySlice.reducer;
 
