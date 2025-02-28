@@ -4,6 +4,7 @@ import Calendar from "../components/Calendar"
 import { useDispatch } from 'react-redux';
 import { fetchCategories } from '../redux/slices/categorySlice';
 import { fetchTodos } from '../redux/slices/todoSlice';
+import Categorylist from '../components/Categorylist';
 
 
 function Main(){
@@ -23,6 +24,10 @@ function Main(){
             <Todoslist username={username}/>
             </div> */}
             <div className='d-flex justify-content-center'>
+            <div className="categorylist-container"> {/* 추가된 클래스 */}
+                <Categorylist/>
+            </div>
+
                 {/* <div className='main-categorylist-box'>
                 <Categorylist />
                 </div> */}
