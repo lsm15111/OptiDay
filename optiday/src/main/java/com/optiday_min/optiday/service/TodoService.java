@@ -1,5 +1,7 @@
 package com.optiday_min.optiday.service;
 
+import com.optiday_min.optiday.domain.Comment;
+import com.optiday_min.optiday.dto.CommentResponse;
 import com.optiday_min.optiday.dto.TodoRequest;
 import com.optiday_min.optiday.dto.TodoResponse;
 import com.optiday_min.optiday.domain.Category;
@@ -27,6 +29,7 @@ public class TodoService {
     @PersistenceContext
     private EntityManager entityManager; //EntityManage 주입
     private final MemberService memberService;
+    private final CommentService commentService;
     private final TodoRepository todoRepository;
 
 
@@ -98,6 +101,7 @@ public class TodoService {
         }
         todoRepository.saveAll(todos);
     }
+
 
     private Category getCategoryById(Integer categoryId) {
         if (categoryId != null) {
