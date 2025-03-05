@@ -33,6 +33,8 @@ public class WebSecurityConfig {
         // h2-console is a servlet
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/health/**")
+                        .permitAll()
                         .requestMatchers(
                                 "/api/authenticate",
                                 "/api/members/signup",
