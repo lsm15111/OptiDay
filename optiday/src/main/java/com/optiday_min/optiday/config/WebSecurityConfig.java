@@ -1,8 +1,8 @@
 package com.optiday_min.optiday.config;
 
-import com.optiday_min.optiday.jwt.CustomUserDetailsService;
 import com.optiday_min.optiday.jwt.JwtAuthenticationFilter;
 import com.optiday_min.optiday.jwt.JwtTokenUtil;
+import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -22,10 +22,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class WebSecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    private final JwtTokenUtil jwtTokenUtil;
+
+    public WebSecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -45,7 +48,7 @@ public class WebSecurityConfig {
                 )
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 상태를 Stateless로 설정
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) //세션 상태를 Stateless 설정
 
                 .httpBasic(
                         Customizer.withDefaults()) // 기본인증 활성화
@@ -54,7 +57,7 @@ public class WebSecurityConfig {
                 .cors(Customizer.withDefaults());
         // 특정 URL 제외한 필터 적용
         httpSecurity
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
 
