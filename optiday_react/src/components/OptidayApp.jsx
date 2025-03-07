@@ -14,13 +14,14 @@ import AuthProvider, { useAuth } from "../context/AuthContext"
 
 function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 보여주기
   const authContext = useAuth()
-  // if(!authContext.isAuthLoaded){
-  //   return <div>Loading...</div>
-  // }
-  if(authContext.isAuthenticated){
-    return children
+ // 인증 상태 복원이 완료되지 않았을 경우 로딩 표시
+ if (!authContext.isAuthLoaded) {
+  return <div>Loading...</div>; // 또는 로딩 스피너 등
+}
+  if(!authContext.isAuthenticated){
+    return <Navigate to="/login"/> 
   }
-  return <Navigate to="/login"/> // 사용자 인증 취소시 login page로
+  return children 
 }
 
 function OptidayApp(){

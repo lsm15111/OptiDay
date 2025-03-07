@@ -1,14 +1,14 @@
 import { apiClient } from "./ApiClient";
 
 export const retrieveCommentApi 
-    = (targetId) => apiClient.get(`/comments/${targetId}`)
+    = (todoId) => apiClient.get(`/todos/${todoId}/comments`)
     
 export const createCommentApi 
-= (comment) => apiClient.post(`/comments/`,comment)
+    = (todoId, comment) => apiClient.post(`/todos/${todoId}/comments`,comment)
 
 export const updateCommentApi
-    = (targetId,comment) => apiClient.put(`/comments/${targetId}`,comment)
+    = (todoId,commentId,comment) => apiClient.put(`/todos/${todoId}/comments/${commentId}`,comment)
 
 export const deleteCommentApi 
-    = (targetId) => apiClient.delete(`/comments/${targetId}`)
+    = (todoId,commentId) => apiClient.delete(`/todos/${todoId}/comments/${commentId}`)
 

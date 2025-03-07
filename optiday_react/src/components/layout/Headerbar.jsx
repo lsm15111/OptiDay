@@ -21,7 +21,7 @@ function Headerbar(){
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchMessage());
-        console.log("Headerbar")
+        // console.log("Headerbar")
     },[dispatch])
 
     const handleBlur = () => {

@@ -37,3 +37,7 @@
     min-width: 100px;
     width: 200px;
 }
+.main.contents {
+    display: flex; /* Flexbox 사용 */
+    flex-direction: row; /* 가로 방향으로 배치 */
+}

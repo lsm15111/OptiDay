@@ -6,7 +6,6 @@
     width: 300px;
     min-width: 200px;
     max-width: 500px;
-    max-height: 500px;
     overflow-y: auto;
 }
 
@@ -46,13 +45,15 @@
 
 .selected-todo-info{
     min-width: 400px;
-    border-radius: 10px
+    border-radius: 10px;
+    background-color: #f7f7f7;
+    padding: 10px;
 }
 .feedback-board-container{
     border: 1px solid #ddd;
     border-radius: 10px;
     padding: 10px;
-    height: 522px;
+    height: 750px;
     background-color:  rgb(240, 240, 240);
 }
 .comments-list {
@@ -71,6 +72,7 @@ margin: 5px 0;
 .feedback-comment-button{
     margin: 5px;
     padding: 5px;
+    min-width: 60px;
     border-radius: 5px;
     background-color: #dddddd;
     border: none;
@@ -82,9 +84,14 @@ margin: 5px 0;
 .feedback-comment-input{
     margin: 5px;
     padding: 5px;
+    width: 420px;
     border-radius: 5px;
     background-color: #ffffff;
     border: 2px solid #585858;
+}
+.feedback-comment-formcontainer{
+    max-width: 570px;
+    align-items: center;
 }
 .feedback-myboard-button{
     padding: 8px;
@@ -124,4 +131,7 @@ margin: 5px 0;
 }
 .feedback-board-title-container{
     padding:5px;
+}
+.feedback-comment{
+    width: 400px;
 }

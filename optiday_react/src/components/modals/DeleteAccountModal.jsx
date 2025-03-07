@@ -12,13 +12,11 @@ const DeleteAccountModal = ({ isOpen, onClose }) => {
 
     const handleAccountDelete = async () => {
         const requestBody = {
-            email: email, // CommentRequest의 content 필드와 매핑
+            email: email,
             password: password
         };
-        // console.log(requestBody);
         try{
             const response = await deleteAccountApi(requestBody);
-            // console.log(response);
             alert("계정 삭제 성공")
             onClose()
             logout()

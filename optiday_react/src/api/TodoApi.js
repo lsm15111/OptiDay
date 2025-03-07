@@ -13,7 +13,7 @@ export const deleteTodoApi
     = (todoid) => apiClient.delete(`/todos/${todoid}`)
 
 
-
+    
 export const retrieveTodosForFollowingApi
     = (followingId) => apiClient.get(`/todos/followings/${followingId}`)
 

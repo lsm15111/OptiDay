@@ -20,3 +20,6 @@ export const AccountSearchApi
 
 export const retrieveProfileForMemberIdApi
     = (targetId) => apiClient.get(`/members/profile/${targetId}`)
+
+export const deleteAccountApi 
+    = (AccountDeleteRequest) => apiClient.delete(`/members`,{ data: { email: AccountDeleteRequest.email,password:AccountDeleteRequest.password } })
