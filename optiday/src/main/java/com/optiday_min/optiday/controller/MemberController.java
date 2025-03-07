@@ -39,7 +39,7 @@ public class MemberController {
         Member member = memberService.registerMember(signUpRequest);
         // User 등록
         userService.registerUser(signUpRequest.getEmail(), signUpRequest.getPassword(),member);
-        return ResponseEntity.ok("Member created successfully");
+        return ResponseEntity.ok("회원 생성 완료");
     }
 
     // 상태 메시지 조회
@@ -51,9 +51,9 @@ public class MemberController {
     }
 
     // 사용자 삭제
-    @PostMapping("/delete")
+    @DeleteMapping
     public void deleteMember(@RequestHeader("Authorization") String token
-                                               , @RequestBody(required = false) AccountDeleteRequest accountDeleteRequest) {
+                           , @RequestBody(required = false) AccountDeleteRequest accountDeleteRequest) {
         Long memberId = userService.getMemberIdForToken(token);
         memberService.deleteAccount(memberId, accountDeleteRequest);
     }
