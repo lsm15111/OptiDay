@@ -33,6 +33,7 @@ public class WebSecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
+
         // h2-console is a servlet
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
