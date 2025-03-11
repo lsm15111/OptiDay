@@ -3,12 +3,8 @@ name: CICD
 on:
   push:
     branches: [ "main" ]
-    paths:
-      - 'optiday/**'
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'optiday/**'
       
 permissions:
   contents: read
@@ -25,7 +21,7 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          
+
       - name: Check Java version
         run: java -version
 
