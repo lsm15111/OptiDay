@@ -35,9 +35,9 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build Docker
-        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/live_server -f optiday/Dockerfile optiday
+        run: docker build --platform linux/amd64 -t ${{ secrets.DOCKERHUB_USERNAME }}/optiday_back -f Dockerfile optiday
       - name: Push Docker
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/optiday_back:latest
         
   deploy:
     needs: build
@@ -45,40 +45,24 @@ jobs:
     steps:
       - name: Set target IP
         run: |
-          echo "Checking server status..."
-          
-          # 최대 5번 재시도 (10초 간격)
-          for i in {1..5}; do
-            STATUS=$(curl -o /dev/null -s -w "%{http_code}" "http://${{ secrets.LIVE_SERVER_IP }}/health/env" || echo "000")
-            echo "Attempt $i: HTTP Status: $STATUS"
-
-            if [ "$STATUS" = "200" ]; then
-              CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.LIVE_SERVER_IP }}/health/env")
-              break
-            fi
-            
-            echo "Waiting for server... ($i/5)"
-            sleep 10
-          done
-
-          # 실패한 경우 기본값 설정
-          if [ -z "$CURRENT_UPSTREAM" ]; then
-            echo "Server not responding, defaulting to green"
-            CURRENT_UPSTREAM="green"
+          STATUS=$(curl -o /dev/null -w "%{http_code}" "http://${{ secrets.OPTIDAY_BACK_IP }}/health/env")
+          echo $STATUS
+          if [ $STATUS = 200 ]; then
+            CURRENT_UPSTREAM=$(curl -s "http://${{ secrets.OPTIDAY_BACK_IP }}/health/env")
+          else
+            CURRENT_UPSTREAM=green
           fi
-
-          echo "CURRENT_UPSTREAM=$CURRENT_UPSTREAM" >> $GITHUB_ENV
-
-          if [ "$CURRENT_UPSTREAM" = "blue" ]; then
+          echo CURRENT_UPSTREAM=$CURRENT_UPSTREAM >> $GITHUB_ENV
+          if [ $CURRENT_UPSTREAM = blue ]; then
             echo "CURRENT_PORT=8080" >> $GITHUB_ENV
             echo "STOPPED_PORT=8081" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=green" >> $GITHUB_ENV
-          elif [ "$CURRENT_UPSTREAM" = "green" ]; then
+          elif [ $CURRENT_UPSTREAM = green ]; then
             echo "CURRENT_PORT=8081" >> $GITHUB_ENV
             echo "STOPPED_PORT=8080" >> $GITHUB_ENV
             echo "TARGET_UPSTREAM=blue" >> $GITHUB_ENV
           else
-            echo "Error: Invalid upstream"
+            echo "error"
             exit 1
           fi
           
@@ -86,17 +70,17 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
-          host: ${{ secrets.LIVE_SERVER_IP }}
+          host: ${{ secrets.OPTIDAY_BACK_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/live_server:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/optiday_back:latest
             sudo docker-compose -f docker-compose-${{env.TARGET_UPSTREAM}}.yml up -d
       
       - name: Check deploy server URL
         uses: jtalk/url-health-check-action@v3
         with:
-          url: http://${{ secrets.LIVE_SERVER_IP }}:${{env.STOPPED_PORT}}/health/env
+          url: http://${{ secrets.OPTIDAY_BACK_IP }}:${{env.STOPPED_PORT}}/health/env
           max-attempts: 5
           retry-delay: 10s
 
@@ -104,7 +88,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
-          host: ${{ secrets.LIVE_SERVER_IP }}
+          host: ${{ secrets.OPTIDAY_BACK_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
@@ -114,7 +98,7 @@ jobs:
         uses: appleboy/ssh-action@master
         with:
           username: ubuntu
-          host: ${{ secrets.LIVE_SERVER_IP }}
+          host: ${{ secrets.OPTIDAY_BACK_IP }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script_stop: true
           script: |
