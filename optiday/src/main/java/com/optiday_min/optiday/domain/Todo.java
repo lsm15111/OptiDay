@@ -40,9 +40,9 @@ public class Todo {
 
     private boolean isCompleted = false;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id",nullable = false)
-    @JsonBackReference
     private Member member; // 연결된 카테고리
 
     @ManyToOne
@@ -52,6 +52,7 @@ public class Todo {
 
     @OneToMany(mappedBy = "todo",cascade = CascadeType.ALL,orphanRemoval = true)
     @JsonIgnore
+    @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
 

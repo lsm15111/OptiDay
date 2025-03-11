@@ -40,23 +40,25 @@ public class Member {
     // 나의 일정 목록
     @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @Builder.Default
     private List<Todo> todos = new ArrayList<>();
 
     // 나의 카테고리
     @JsonIgnore
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @Builder.Default
     private List<Category> categories = new ArrayList<>();
 
     // 내가 팔로우한 사람들
     @JsonIgnore
     @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Follow> followings = new ArrayList<>();
 
     // 나를 팔로우한 사람들
     @JsonIgnore
     @OneToMany(mappedBy = "following", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Follow> followers = new ArrayList<>();
 
 
