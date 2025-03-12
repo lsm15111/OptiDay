@@ -115,7 +115,7 @@ const Signup = () => {
           navigate('/login')
         }
       } catch(error){
-        console.log(error.response.data)
+        // console.log(error.response.data)
         const newErrors = {};
         Object.entries(error.response.data).forEach(([key, value]) => {
           newErrors[key] = value;
@@ -123,7 +123,7 @@ const Signup = () => {
       });
       }
     } else {
-      console.log('폼 검증 실패');
+      alert('폼 검증 실패');
     }
   };
 

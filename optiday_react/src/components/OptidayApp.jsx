@@ -16,7 +16,7 @@ function AuthenticatedRoute({children}){ // 인증 있을경우만 route 하위 
   const authContext = useAuth()
  // 인증 상태 복원이 완료되지 않았을 경우 로딩 표시
  if (!authContext.isAuthLoaded) {
-  return <div>Loading...</div>; // 또는 로딩 스피너 등
+  return 
 }
   if(!authContext.isAuthenticated){
     return <Navigate to="/login"/> 
