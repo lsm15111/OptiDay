@@ -13,7 +13,7 @@ public class CorsConfig implements WebMvcConfigurer {
                 .allowedOrigins("*") // React 클라이언트 주소 "http://localhost:3000"
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS") // 허용할 HTTP 메서드
                 .allowedHeaders("*") // 모든 헤더 허용
-                .allowCredentials(false); // 쿠키 사용 허용 (필요 시) true
+                .allowCredentials(true); // JWT, 쿠키 사용 허용 (필요 시)
     }
 
 }

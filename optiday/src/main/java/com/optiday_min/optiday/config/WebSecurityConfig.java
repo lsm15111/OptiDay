@@ -37,13 +37,9 @@ public class WebSecurityConfig {
         // h2-console is a servlet
         httpSecurity
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/health/**")
+                        .requestMatchers("/health/**","/api/authenticate",
+                                "/api/members/signup", "/h2-console")
                         .permitAll()
-                        .requestMatchers(
-                                "/api/authenticate",
-                                "/api/members/signup",
-                                "/h2-console").permitAll()
-
                         .requestMatchers(PathRequest.toH2Console()).permitAll() // h2-console is a servlet and NOT recommended for a production
                         .anyRequest().authenticated()
                 )
@@ -57,8 +53,7 @@ public class WebSecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin)) // Frame-Options Same-Origin 설정(H2 Console 사용 시 필요)
                 .cors(Customizer.withDefaults());
         // 특정 URL 제외한 필터 적용
-        httpSecurity
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        httpSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
 
