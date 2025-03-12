@@ -110,6 +110,7 @@ const Signup = () => {
     if (validateForm()) {
       try{
         const res = await signupApi(userData)
+        console.log(res);
         if(res.status ===200){
           alert('회원가입 성공')
           navigate('/login')

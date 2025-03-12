@@ -18,8 +18,8 @@ const DeleteAccountModal = ({ isOpen, onClose }) => {
         try{
             const response = await deleteAccountApi(requestBody);
             alert("계정 삭제 성공")
-            onClose()
             logout()
+            window.location.href = '/login';
         }catch(err){
             alert("계정 삭제 실패. email과 password를 확인하세요.");
         }

@@ -24,9 +24,6 @@ function Main(){
             <Todoslist username={username}/>
             </div> */}
             <div className='d-flex justify-content-center'>
-            <div className="categorylist-container"> {/* 추가된 클래스 */}
-                <Categorylist/>
-            </div>
 
                 {/* <div className='main-categorylist-box'>
                 <Categorylist />
@@ -36,6 +33,9 @@ function Main(){
                         <Calendar/>
                     </div>
                 </div>
+                <div className="categorylist-container"> {/* 추가된 클래스 */}
+                <Categorylist/>
+            </div>
             </div>
         </div>
     )

@@ -66,18 +66,23 @@ function Mypage() {
     async function handleSave() {
         const isValid = handleFieldSave(['username', 'birthDate', 'phone']);
         if (isValid) {
-            const response = await updateProfileApi(userData);
-            if (response.status === 200) {
-                // console.log('저장된 데이터:', userData);
-                dispatch(setMessage(userData.message));
-                alert('프로필 수정 완료');
-            } else if(response.status === 400){
-                return alert(`수정 실패: 닉네임 중복`);
-            } else{
-                return alert(`저장 실패: 서버 응답 ${response.status}`);
+            try{
+                const response = await updateProfileApi(userData);
+                console.log(response);
+                if (response.status === 200) {
+                    // console.log('저장된 데이터:', userData);
+                    dispatch(setMessage(userData.message));
+                    alert('프로필 수정 완료');
+                } else if(response.status === 400){
+                    return alert(`수정 실패: 닉네임 중복`);
+                } else{
+                    return alert(`저장 실패: 서버 응답 ${response.status}`);
+                }
+                setIsEditing(false);
+                setTempData(null);
+            }catch(error){
+                alert(error.response.data)
             }
-            setIsEditing(false);
-            setTempData(null);
         }
     }
 
@@ -157,7 +162,7 @@ function Mypage() {
     };
 
     const handleAccountDelete = () => {
-        
+        setIsModalOpen(false);
     }
     return (
         <div className="contents">
@@ -337,7 +342,7 @@ function Mypage() {
 
                             <DeleteAccountModal
                                 isOpen={isModalOpen}
-                                onClose={() => setIsModalOpen(false)}
+                                onClose={handleAccountDelete}
                             />
                         <div className="d-flex justify-content-center mt-4">
                             {!isEditing ? (

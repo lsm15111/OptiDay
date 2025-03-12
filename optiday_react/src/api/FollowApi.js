@@ -4,7 +4,7 @@ export const retrieveFollowApi
     = () => apiClient.get(`/follows/relations`)
 
 export const followApi 
-    = (targetId) => apiClient.post(`/follows/${targetId}`)
+    = (targetId) => apiClient.post(`/follows/follow/${targetId}`)
 export const unfollowApi 
-    = (targetId) => apiClient.delete(`/follows/${targetId}`)
+    = (targetId) => apiClient.delete(`/follows/unfollow/${targetId}`)
 
