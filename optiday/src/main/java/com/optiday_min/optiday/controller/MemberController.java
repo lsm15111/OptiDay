@@ -12,6 +12,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/members")
@@ -34,7 +37,19 @@ public class MemberController {
 
     // 회원 생성 SignUpRequest -> User Entity
     @PostMapping("/signup")
-    public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+        Map<String, String> errors = new HashMap<>();
+
+        if (userService.isEmail(signUpRequest.getEmail())) {
+            errors.put("email", "이미 사용 중인 이메일입니다.");
+        }
+        if (memberService.isUsername(signUpRequest.getUsername())) {
+            errors.put("username","이미 사용 중인 이름입니다.");
+        }
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         // Member 생성
         Member member = memberService.registerMember(signUpRequest);
         // User 등록

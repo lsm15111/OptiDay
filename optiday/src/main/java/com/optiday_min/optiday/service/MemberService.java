@@ -3,6 +3,7 @@ package com.optiday_min.optiday.service;
 
 import com.optiday_min.optiday.dto.*;
 import com.optiday_min.optiday.domain.Member;
+import com.optiday_min.optiday.exception.NotAvailableRequestException;
 import com.optiday_min.optiday.repository.FollowRepository;
 import com.optiday_min.optiday.repository.MemberRepository;
 import com.optiday_min.optiday.jwt.UserService;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
 
 @Service
@@ -37,14 +39,6 @@ public class MemberService {
 
     // 회원가입 (기본값 데이터 추가, 비밀번호 암호화)
     public Member registerMember(SignUpRequest signUpRequest) {
-        // User 에서 Email 중복 검사
-        if(userService.isEmail(signUpRequest.getEmail())) {
-            throw new EntityExistsException("Email already exists");
-        }
-        // Member 에서 Username 중복 검사
-        if(isUsername(signUpRequest.getUsername())) {
-            throw new EntityExistsException("Username already exists");
-        }
         // 첫 상태 메시지 설정
         signUpRequest.setMessage("안녕하세요, "+signUpRequest.getUsername());
         // Member 생성
@@ -98,9 +92,10 @@ public class MemberService {
     }
 
     // 유저 네임 존재 true,false 반환
-    private boolean isUsername(String username) {
+    public boolean isUsername(String username) {
         return memberRepository.existsByUsername(username);
     }
+
 
     public MemberProfile getMemberProfile(Long memberId, Long pickMemberId) {
         Member pickMember = memberRepository.findById(pickMemberId)
