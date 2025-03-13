@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @RestController
-@RequestMapping("/health")
+@RequestMapping("/api/health")
 public class HealthCheckController {
 
     @Value("${server.env}")
