@@ -51,5 +51,5 @@ jobs:
         script: |
           docker stop react-app || true
           docker rm react-app || true
-          docker pull your-dockerhub-username/react-app
+          docker pull ${{ secrets.DOCKERHUB_USERNAME}}/react-app
           docker run -d --name react-app -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME}}/react-app
