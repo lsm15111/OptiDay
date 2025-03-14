@@ -25,7 +25,6 @@ jobs:
 
     - name: Build React App
       run: |
-        cd optiday_react
         npm run build
       working-directory: optiday_react
 
