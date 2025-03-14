@@ -1,0 +1,56 @@
+name: Deploy React to EC2
+
+on:
+  push:
+    branches: [ "main" ]
+    paths:
+      - 'optiday_react/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: optiday_react
+
+    - name: Build React App
+      run: |
+        cd optiday_react
+        npm run build
+      working-directory: optiday_react
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+    - name: Build Docker
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/react-app .
+      working-directory: optiday_react
+
+    - name: Push Docker
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME}}/react-app
+
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.OPTIDAY_FRONT_IP }}
+        username: ubuntu
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          docker stop react-app || true
+          docker rm react-app || true
+          docker pull your-dockerhub-username/react-app
+          docker run -d --name react-app -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME}}/react-app

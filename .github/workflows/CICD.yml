@@ -3,8 +3,12 @@ name: CICD
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - 'optiday/**'
   pull_request:
     branches: [ "main" ]
+    paths:
+      - 'optiday/**'
       
 permissions:
   contents: read
