@@ -49,7 +49,7 @@ jobs:
         username: ubuntu
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          docker stop react-app || true
-          docker rm react-app || true
-          docker pull ${{ secrets.DOCKERHUB_USERNAME}}/react-app
-          docker run -d --name react-app -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME}}/react-app
+          sudo docker stop react-app || true
+          sudo docker rm react-app || true
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME}}/react-app
+          sudo docker run -d --name react-app -p 3000:3000 ${{ secrets.DOCKERHUB_USERNAME}}/react-app
