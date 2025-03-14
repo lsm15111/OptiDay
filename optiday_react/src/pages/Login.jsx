@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import '../styles/Login.css';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { fetchCategories } from '../redux/slices/categorySlice';
 import { fetchMessage } from '../redux/slices/messageSlice';

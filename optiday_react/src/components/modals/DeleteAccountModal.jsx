@@ -16,7 +16,7 @@ const DeleteAccountModal = ({ isOpen, onClose }) => {
             password: password
         };
         try{
-            const response = await deleteAccountApi(requestBody);
+            await deleteAccountApi(requestBody);
             alert("계정 삭제 성공")
             logout()
             window.location.href = '/login';

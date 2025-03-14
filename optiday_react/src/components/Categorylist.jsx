@@ -3,7 +3,7 @@ import "../styles/Categorylist.css";
 import { CirclePicker } from "react-color";
 import { useEffect, useRef, useState } from "react";
 import { deleteCategory, updateCategoryColor, updateCategoryName, addCategory } from "../redux/slices/categorySlice"; // 카테고리 추가 액션 추가
-import { Edit, PlusCircle, Trash2 } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 import { createCategoryApi, deleteCategoryApi, updateCategoryColorApi, updateCategoryNameApi } from "../api/CategoryApi";
 
 function Categorylist() {
@@ -40,10 +40,10 @@ function Categorylist() {
     }
   };
 
-  const handleColorChange = (color) => {
+  const handleColorChange = async (color) => {
     if (selectedCategoryId) {
       try{
-        const response = updateCategoryColorApi(selectedCategoryId, color.hex);
+        await updateCategoryColorApi(selectedCategoryId, color.hex);
         dispatch(updateCategoryColor({ id: selectedCategoryId, color: color.hex }));
       }catch(error){
         alert("서버 에러");
@@ -64,10 +64,10 @@ function Categorylist() {
     };
   }, []);
 
-  const handleInputKeyDown = (e) => {
+  const handleInputKeyDown = async(e) => {
     if (e.key === 'Enter') {
       try {
-        const response = updateCategoryNameApi(selectedCategoryId, editedName);
+        await updateCategoryNameApi(selectedCategoryId, editedName);
         dispatch(updateCategoryName({ id: selectedCategoryId, name: editedName }));
         setIsEditing(false);
       } catch (error) {
@@ -78,7 +78,7 @@ function Categorylist() {
 
   const handleCategoryDelete = async () => {
     try {
-      const response = deleteCategoryApi(selectedCategoryId);
+      await deleteCategoryApi(selectedCategoryId);
       dispatch(deleteCategory(selectedCategoryId));
     } catch (error) {
       alert("서버 에러");

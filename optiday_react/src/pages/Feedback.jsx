@@ -6,9 +6,8 @@ import { fetchFollow, selectFollowings } from "../redux/slices/followSlice";
 import { fetchTodos } from "../redux/slices/todoSlice";
 import { fetchCategories } from "../redux/slices/categorySlice";
 import { retrieveTodosForFollowingApi } from "../api/TodoApi";
-import Categorylist from "../components/Categorylist";
 import { createCommentApi, deleteCommentApi, retrieveCommentApi } from "../api/CommentApi";
-import { Edit, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 function Feedback() {
   const [selectedTodo, setSelectedTodo] = useState(null);
@@ -57,7 +56,7 @@ function Feedback() {
     dispatch(fetchFollow());
     dispatch(fetchTodos());
     dispatch(fetchCategories());
-  },[])
+  },[dispatch])
 
   useEffect(() => {
     // selectedUserTodos가 변경될 때마다 정렬된 todos 업데이트

@@ -22,7 +22,7 @@ const Signup = () => {
   }
 
   const [errors, setErrors] = useState({});
-  const [showVerification, setShowVerification] = useState(false);
+  // const [showVerification, setShowVerification] = useState(false);
   const navigate = useNavigate();
 
   const validateForm = () => {
@@ -93,17 +93,17 @@ const Signup = () => {
     }
   };
 
-  const handleVerificationRequest = () => {
-    if (!formData.email) {
-      setErrors(prev => ({
-        ...prev,
-        email: '이메일을 입력해주세요'
-      }));
-      return;
-    }
-    setShowVerification(true);
-    // TODO: 실제 이메일 인증 요청 로직 구현
-  };
+  // const handleVerificationRequest = () => {
+  //   if (!formData.email) {
+  //     setErrors(prev => ({
+  //       ...prev,
+  //       email: '이메일을 입력해주세요'
+  //     }));
+  //     return;
+  //   }
+  //   setShowVerification(true);
+  //   // TODO: 실제 이메일 인증 요청 로직 구현
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -1,37 +1,37 @@
-import { Search, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Link } from "react-router-dom"
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import '../../styles/Headerbar.css'
 import { useAuth } from "../../context/AuthContext";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMessage } from "../../redux/slices/messageSlice";
 
 function Headerbar(){
-    const [isSearchActive, setIsSearchActive] = useState(false);
+    // const [isSearchActive, setIsSearchActive] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    const inputRef = useRef(null);
+    // const inputRef = useRef(null);
     const {logout} = useAuth(); 
     const message = useSelector(state => state.message.message);
 
-    const handleFocus = () => {
+/*     const handleFocus = () => {
         setIsSearchActive(true);
         inputRef.current.focus();
-    };
+    }; */
     const dispatch = useDispatch();
     useEffect(() => {
         dispatch(fetchMessage());
         // console.log("Headerbar")
     },[dispatch])
 
-    const handleBlur = () => {
+/*     const handleBlur = () => {
         setTimeout(() => {
             if (!inputRef.current || !inputRef.current.contains(document.activeElement)) {
                 setIsSearchActive(false);
                 inputRef.current.blur();
             }
         }, 100);
-    };
+    }; */
     function handleLogout(){
         logout();
         window.location.href = '/login';
