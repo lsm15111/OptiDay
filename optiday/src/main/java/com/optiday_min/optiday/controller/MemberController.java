@@ -113,4 +113,5 @@ public class MemberController {
         // (시작크기,시작+size 까지,검색어)
         return memberService.searchMembers(currentPage, pageSize, search,memberId);
     }
+
 }
