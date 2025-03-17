@@ -40,7 +40,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/api/health/**","/api/authenticate",
                                 "/api/members/signup", "/h2-console")
                         .permitAll()
-                        .requestMatchers(PathRequest.toH2Console()).permitAll() // h2-console is a servlet and NOT recommended for a production
+//                        .requestMatchers(PathRequest.toH2Console()).permitAll() // h2-console is a servlet and NOT recommended for a production
                         .anyRequest().authenticated()
                 )
                 .csrf(AbstractHttpConfigurer::disable) // CSRF 비활성화
